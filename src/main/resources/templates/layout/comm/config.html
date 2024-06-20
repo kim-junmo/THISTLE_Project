@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="ko"xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout">
+<head th:fragment="configFragment">
+    <meta charset="UTF-8">
+
+    <!-- 각 페이지 마다 title태그 내용이 각각 다르기 때문에 재정의 목적 -->
+    <th:block layout:fragment="title">
+        <!-- 각 페이지의 title -->
+    </th:block>
+
+    <!-- 모든 페이지가 상속 -->
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="author" content="Untree.co">
+    <link rel="shortcut icon" href="favicon.png">
+
+    <meta name="description" content="" />
+    <meta name="keywords" content="bootstrap, bootstrap4" />
+
+    <link href="https://fonts.googleapis.com/css2?family=Display+Playfair:wght@400;700&family=Inter:wght@400;700&display=swap" rel="stylesheet">
+
+
+    <link rel="stylesheet" href="https://unicons.iconscout.com/release/v4.0.0/css/line.css">
+
+    <link rel="stylesheet" href="/css/header/bootstrap.min.css">
+    <link rel="stylesheet" href="/css/header/animate.min.css">
+    <link rel="stylesheet" href="/css/header/owl.carousel.min.css">
+    <link rel="stylesheet" href="/css/header/owl.theme.default.min.css">
+    <link rel="stylesheet" href="/css/header/jquery.fancybox.min.css">
+    <link rel="stylesheet" href="https://themewagon.github.io/learner/fonts/icomoon/style.css">
+    <link rel="stylesheet" href="https://themewagon.github.io/learner/fonts/flaticon/font/flaticon.css">
+    <link rel="stylesheet" href="/css/header/aos.css">
+    <link rel="stylesheet" href="/css/header/style.css">
+
+
+
+
+
+    <!-- 각 페이지 마다 css 내용이 각각 다른 경우 재정의 목적 -->
+    <th:block layout:fragment="css">
+        <!-- 각 페이지의 css -->
+    </th:block>
+
+
+    <!-- 각 페이지 마다 javascript 내용이 각각 다른 경우 재정의 목적 -->
+    <th:block layout:fragment="javascript">
+        <!-- 각 페이지의 javascript -->
+
+
+
+</head>
+</html>
