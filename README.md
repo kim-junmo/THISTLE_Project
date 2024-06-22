@@ -8,3 +8,6 @@
 3. 24.06.20
    쇼핑몰 메인 페이지 구성 完, 회원가입 페이지 구성 完, 아이디 중복체크 기능 작업 完
 ![회원가입 페이지](https://github.com/kim-junmo/THISTLE_Project/assets/163493377/76356f54-af8b-4e4b-a467-004692e906ff)
+4. 24.06.22
+   회원가입 페이지 리뉴얼
+![image](https://github.com/kim-junmo/THISTLE_Project/assets/163493377/df33f4f4-80bc-43ba-b79b-f70d4c4acd55)
