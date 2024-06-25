@@ -2,6 +2,7 @@
 <html lang="ko" xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout">
 <head th:replace="~{layout/comm/config :: configFragment}"></head>
 <body>
+
 <div th:replace ="~{layout/comm/header :: headerFragment}" ></div>
 
 <!-- 각각의 페이지에서 구현하고자 하는 컨텐츠를 작성 -->
@@ -16,6 +17,31 @@
     <!--각각 페이지에서 필요한 자바스크립트를 작성-->
 
 </th:block>
+
+<script th:inline="javascript">
+    document.addEventListener('DOMContentLoaded', function() {
+        const searchBtn = document.getElementById('search-btn');
+        const searchArea = document.getElementById('search-area');
+        const closeBtn = searchArea.querySelector('.close-btn');
+
+        searchBtn.addEventListener('click', function(e) {
+            e.preventDefault();
+            searchArea.classList.add('search-active');
+        });
+
+        closeBtn.addEventListener('click', function() {
+            searchArea.classList.remove('search-active');
+        });
+
+        // 검색 영역 외부 클릭 시 닫기
+        searchArea.addEventListener('click', function(e) {
+            if (e.target === searchArea) {
+                searchArea.classList.remove('search-active');
+            }
+        });
+    });
+</script>
+
 </body>
 
 </html>

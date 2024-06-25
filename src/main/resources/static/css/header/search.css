@@ -1,0 +1,121 @@
+.a.mobile-show.search-bar-icon {
+    -webkit-transition: 0.3s;
+    -o-transition: 0.3s;
+    transition: 0.3s;
+}
+
+a.mobile-show.search-bar-icon {
+    -webkit-transition: 0.3s;
+    -o-transition: 0.3s;
+    transition: 0.3s;
+}
+
+.search-area {
+    position: fixed;
+    left: 0;
+    top: 0;
+    z-index: 5555;
+    background-color: #bbb8d3;
+    width: 100%;
+    height: 100%;
+    text-align: center;
+}
+
+span.close-btn {
+    position: absolute;
+    right: 0%;
+    color: #fff;
+    top: 5%;
+    cursor: pointer;
+}
+
+.search-area {
+    height: 100%;
+}
+
+.search-area div {
+    height: 100%;
+}
+
+.search-bar {
+    height: 100%;
+    display: table;
+    width: 100%;
+}
+
+a.mobile-show {
+    display: none;
+}
+
+.search-area .search-bar div.search-bar-tablecell {
+    display: table-cell;
+    vertical-align: middle;
+    height: auto;
+}
+
+.search-bar-tablecell input {
+    border: none;
+    padding: 15px;
+    width: 60%;
+    background-color: transparent;
+    border-bottom: 1px solid #D8BDF8;
+    display: block;
+    margin: 0 auto;
+    text-align: center;
+    font-size: 50px;
+    font-weight: 700;
+    margin-bottom: 40px;
+    color: #fff;
+}
+
+.search-bar-tablecell button[type=submit] {
+    border: none;
+    background-color: #D8BDF8;
+    padding: 15px 30px;
+    cursor: pointer;
+    display: inline-block;
+    border-radius: 50px;
+    font-weight: 700;
+}
+
+.search-bar-tablecell input::-webkit-input-placeholder {
+    color: #fff;
+}
+
+.search-bar-tablecell input:-ms-input-placeholder {
+    color: #fff;
+}
+
+.search-bar-tablecell input::-ms-input-placeholder {
+    color: #fff;
+}
+
+.search-bar-tablecell input::placeholder {
+    color: #fff;
+}
+
+.search-bar-tablecell button[type=submit] i {
+    margin-left: 5px;
+}
+
+.search-area {
+    visibility: hidden;
+    opacity: 0;
+    -webkit-transition: 0.3s;
+    -o-transition: 0.3s;
+    transition: 0.3s;
+}
+
+.search-area.search-active {
+    visibility: visible;
+    opacity: 1;
+    z-index: 999;
+}
+
+.search-bar-tablecell h3 {
+    color: #fff;
+    margin-bottom: 30px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 7px;
+}

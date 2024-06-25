@@ -1,0 +1,81 @@
+<!doctype html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{/layout/baseLayout}">
+<head>
+
+
+    <title>THISTLE</title>
+</head>
+
+<body>
+<th:block layout:fragment="content">
+<div class="untree_co-hero overlay" style="background-image: url('/images/THISTLE_Flower.jpg');">
+    <div class="container">
+        <div class="row align-items-center justify-content-center">
+            <div class="col-12">
+                <div class="row justify-content-center ">
+                    <div class="col-lg-6 text-center ">
+                        <h1 class="mb-4 heading text-white" data-aos="fade-up" data-aos-delay="100">Login</h1>
+
+                    </div>
+                </div>
+            </div>
+        </div> <!-- /.row -->
+    </div> <!-- /.container -->
+
+</div> <!-- /.untree_co-hero -->
+
+
+
+
+    <div class="untree_co-section">
+        <div class="container">
+            <br>
+            <br>
+            <br>
+            <br>
+            <br>
+            <div class="row mb-5 justify-content-center">
+                <div class="col-lg-5 mx-auto order-1" data-aos="fade-up" data-aos-delay="200">
+                    <form class="form-box" id="loginForm" th:action="@{/user/login}" method="post">
+                        <div class="row">
+                            <div class="col-12 mb-3">
+                                <input type="text" class="form-control" id="user_id" name="user_id" placeholder="아이디를 입력하세요." value="user01">
+                            </div>
+                            <div class="col-12 mb-3">
+                                <input type="password" class="form-control" id="user_password" name="user_password" placeholder="비밀번호를 입력하세요." value="1234">
+                            </div>
+                            <div class="col-12 mb-3">
+                                <button type="submit" class="btn btn-info btn-block" id="btnJoin">Login</button>
+                            </div>
+                        </div>
+                    </form>
+                    <br>
+                    <br>
+                    <div class="col-12 mb-3 text-center">
+                        <a th:href="@{/user/join}">회원가입</a> <a th:href="@{/user/idfind}">아이디 찾기</a> <a th:href="@{/user/pwfind}">비밀번호 찾기</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div> <!-- /.untree_co-section -->
+</th:block>
+
+<th:block layout:fragment="script">
+
+    <script th:inline="javascript">
+
+        let msg = [[${msg}]]
+        if(msg == "failID") {
+            alert("아이디를 잘못 입력하셨습니다. 정확히 입력해주세요");
+            document.getElementById("user_id").focus();
+        }else if(msg == "failPW"){
+            alert("비밀번호를 잘못 입력하셨습니다. 정확히 입력해주세요");
+            document.getElementById("user_password").focus();
+        }
+    </script>
+
+</th:block>
+</body>
+</html>

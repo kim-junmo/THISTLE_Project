@@ -4,5 +4,5 @@ package com.docmall.thistle.common.constants;
 public class constants {
 
     //메일 설정, 메일 템플릿 폴더
-    public static final String MAILFOLDNAME = "mailtemplate";
+    public static final String MAILFOLDNAME = "email";
 }

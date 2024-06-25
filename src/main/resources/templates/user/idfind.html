@@ -1,0 +1,120 @@
+<!doctype html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{/layout/baseLayout}">
+<head>
+
+
+    <title>THISTLE</title>
+</head>
+
+<body>
+<th:block layout:fragment="content">
+<div class="untree_co-hero overlay" style="background-image: url('/images/THISTLE_Flower.jpg');">
+    <div class="container">
+        <div class="row align-items-center justify-content-center">
+            <div class="col-12">
+                <div class="row justify-content-center ">
+                    <div class="col-lg-6 text-center ">
+                        <h1 class="mb-4 heading text-white" data-aos="fade-up" data-aos-delay="100">아이디 찾기</h1>
+
+                    </div>
+                </div>
+            </div>
+        </div> <!-- /.row -->
+    </div> <!-- /.container -->
+
+</div> <!-- /.untree_co-hero -->
+
+
+
+
+    <div class="untree_co-section">
+        <div class="container">
+            <br>
+            <br>
+            <br>
+            <br>
+            <br>
+            <div class="row mb-5 justify-content-center">
+                <div class="col-lg-5 mx-auto order-1" data-aos="fade-up" data-aos-delay="200">
+                    <form class="form-box" id="idfindForm" th:action="@{/user/idfind}" method="post">
+                        <div class="row">
+
+                            <div class="mb-3">
+                                <label for="user_name" class="form-label">이름 *</label>
+                                <input type="text" class="form-control" id="user_name" name="user_name"  placeholder="이름을 입력하세요." >
+                            </div>
+                            <div class="mb-3">
+                                <label for="user_email" class="form-label">이메일 *</label>
+                                <div class="input-group">
+                                    <input type="email" class="form-control" id="user_email" name="user_email" placeholder="이메일을 입력하세요."  required>
+                                    <button type="button" class="btn btn-outline-primary" id="btnMailAuthcode">메일인증</button>
+                                </div>
+                            </div>
+                            <div class="mb-3">
+                                <label for="authcode" class="form-label">이메일 인증코드 *</label>
+                                <div class="input-group">
+                                    <input type="text" class="form-control" id="authcode" name="authcode" placeholder="인증코드를 입력하세요."  required>
+                                </div>
+                            </div>
+                            <br>
+                            <div class="col-12 mb-3">
+                                <button type="submit" class="btn btn-info btn-block" id="btnJoin">아이디 찾기</button>
+                            </div>
+                        </div>
+                    </form>
+                    <br>
+                    <br>
+                    <div class="col-12 mb-3 text-center">
+                        <a th:href="@{/user/join}">회원가입</a><a th:href="@{/user/pwfind}">비밀번호 찾기</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div> <!-- /.untree_co-section -->
+</th:block>
+
+<th:block layout:fragment="script">
+
+    <script th:inline="javascript">
+
+        let msg = [[${msg}]];
+        if(msg == "success"){
+            alert("임시 비밀번호를 메일로 발송하였습니다.");
+            location.href = "/user/login";
+        }else if(msg == "failInput") {
+            alert("가입입력정보를 확인해주세요.");
+            document.getElementById("user_id").focus();
+        }else if(msg == "failAuth") {
+            alert("인증코드를 확인해주세요");
+            document.getElementById("user_id").focus();
+        }
+        $(document).ready(function() {
+            //메일인증코드요청
+            $("#btnMailAuthcode").on("click", function() {
+
+                if($("#user_email").val() == "") {
+                    alert("메일을 입력하세요.");
+                    $("#user_email").focus();
+                    return;
+                }
+
+                $.ajax({
+                    url: '/email/authcode',
+                    type: 'get',
+                    data: {receiverMail: $('user_email').val(), type: "emailPw"},
+                    datatype: 'text',
+                    success: function(result) {
+                        if(result == "success") {
+                            alert("메일로 인증코드가 발급되었습니다.");
+                        }
+                    }
+                });
+            });
+        });
+    </script>
+
+</th:block>
+</body>
+</html>

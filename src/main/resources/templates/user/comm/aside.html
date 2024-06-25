@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<section>
+    <aside id="ASIDE">
+        <div class="aside__area">
+            <h3 class="aside__title">마이페이지</h3>
+            <div class="aside__menu ver_2">
+                <ul>
+                    <li>
+                        <a href="javascript:;">정보</a>
+                        <div class="aside_menu_sub">
+                            <ul>
+                                <a class="dropdown-item" th:href="@{/user/mypage}">정보 수정</a>
+                                <li class=""><a class="dropdown-item" th:href="@{/user/changepw}">비밀번호 수정</a></li>
+                                <li class=""><a class="dropdown-item" th:href="@{/user/delete}">회원 탈퇴</a></li>
+                            </ul>
+                        </div>
+                    </li>
+                    <li>
+                        <a href="javascript:;">쇼핑</a>
+                        <div class="aside_menu_sub">
+                            <ul>
+                                <li class="on"><a href="/mypage/index">주문/배송</a></li>
+                                <li class=""><a href="/mypage/returnHistory">취소/교환/반품</a></li>
+                                <li class=""><a href="/mypage/giftRece">선물함</a></li>
+                            </ul>
+                        </div>
+                    </li>
+                    <li>
+                        <a href="javascript:;">혜택</a>
+                        <div class="aside_menu_sub">
+                            <ul>
+                                <li class=""><a href="/mypage/coupon">쿠폰</a></li>
+                                <li class=""><a href="/mypage/mileage">포인트</a></li>
+                            </ul>
+                        </div>
+                    </li>
+                    <li>
+                        <a href="javascript:;">활동</a>
+                        <div class="aside_menu_sub">
+                            <ul>
+                                <li class=""><a href="/mypage/myGoodsReview">상품 리뷰</a></li>
+                                <li class=""><a href="/mypage/myGoodsInquiry">상품 문의</a></li>
+                                <li class=""><a href="/mypage/myInquiry">1:1 문의</a></li>
+                                <li class=""><a href="/mypage/myEvent">이벤트 참여내역</a></li>
+                            </ul>
+                        </div>
+                    </li>
+                </ul></div>
+        </div>
+    </aside>
+</section>
+</html>
