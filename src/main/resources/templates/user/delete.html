@@ -1,0 +1,129 @@
+<!doctype html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{/layout/baseLayout}">
+<head>
+
+
+    <title>THISTLE</title>
+</head>
+
+<body>
+<th:block layout:fragment="content">
+    <div class="untree_co-hero overlay" style="background-image: url('/images/THISTLE_Flower.jpg'); z-index: 0;">
+        <div class="container" style="z-index: 1;">
+            <div class="row align-items-center justify-content-center">
+                <div class="col-12">
+                    <div class="row justify-content-center ">
+                        <div class="col-lg-6 text-center ">
+                            <h1 class="mb-4 heading text-white" data-aos="fade-up" data-aos-delay="100">MyPage</h1>
+                        </div>
+                    </div>
+                </div>
+            </div> <!-- /.row -->
+        </div> <!-- /.container -->
+    </div> <!-- /.untree_co-hero -->
+
+
+
+
+    <div class="untree_co-section">
+        <div class="container">
+
+                <div class="col-lg-9 mx-auto order-1" data-aos="fade-up" data-aos-delay="200">
+                    <form class="form-box" id="deleteForm" th:action="@{/user/delete}" method="post">
+                        <div class="row mb-5 justify-content-center">
+                            <div class="mb-3 text-sm-center">
+                                <h3 class="mb-2">카테고리</h3>
+                                <ul class="list-unstyled">
+                                    <li><a href="/user/modify">정보 수정</a>&nbsp;/&nbsp;
+                                        <a href="/user/changepw">비밀번호 변경</a>&nbsp;/&nbsp;
+                                        <a href="/user/delete">회원 탈퇴</a>&nbsp;/&nbsp;
+                                        <a href="/user/logout">logout</a></li>
+                                </ul>
+                            </div>
+                        </div>
+
+
+                        <div class="card-body">
+
+                            <h5 class="mb-3">회원탈퇴 <small class="text-sm-left">(* 필수사항)</small></h5>
+                            <div class="mb-3">
+                                <label for="user_password" class="form-label">현재 비밀번호 *</label>
+                                <input type="password" class="form-control" id="user_password"  name="user_password" required>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            <div class="mt-4 text-center">
+                <button type="button" class="btn btn-info" id="btndelete">회원탈퇴</button>
+                <button type="reset" class="btn btn-secondary ml-2">취소</button>
+            </div>
+        </div>
+    </div>
+            <br>
+            <br>
+            <br>
+            <br>
+            <br>
+
+</th:block>
+
+<th:block layout:fragment="script">
+
+    <!-- 각각의 페이지에서 필요한 자바스크립트 작성 -->
+
+    <script th:inline="javascript">
+
+        let msg = [[${msg}]];
+        if(msg == "failPW") {
+            alert("비밀번호를 확인해주세요")
+        }
+
+
+        //u_email, u_zip_code, u_addr, u_addrdetail, u_phone
+        $(document).ready(function() {
+
+            //삭제버튼 클릭 시
+            $("#btnDelete").on("click", function() {
+
+                if($("user_password").val()== "") {
+                    alert("비밀번호를 입력하세요.");
+                    $("user_password").focus();
+                    return;
+                }
+                // modifyForm을 서밋합니다.
+                $("#deleteForm").submit();
+
+            });
+
+        }); //read event end 	  let msg = [[${msg}]];
+        if(msg == "failPW") {
+            alert("비밀번호를 확인해주세요")
+        }
+
+
+        //u_email, u_zip_code, u_addr, u_addrdetail, u_phone
+        $(document).ready(function() {
+
+            //삭제버튼 클릭 시
+            $("#btnDelete").on("click", function() {
+
+                if($("user_password").val()== "") {
+                    alert("비밀번호를 입력하세요.");
+                    $("user_password").focus();
+                    return;
+                }
+                // modifyForm을 서밋합니다.
+                $("#deleteForm").submit();
+
+            });
+
+        }); //read event end
+
+
+    </script>
+</th:block>
+
+</body>
+</html>

@@ -5,19 +5,16 @@
 
 <div th:replace ="~{layout/comm/header :: headerFragment}" ></div>
 
+
 <!-- 각각의 페이지에서 구현하고자 하는 컨텐츠를 작성 -->
 <th:block layout:fragment = "content">
 
 </th:block>
 
+
 <th:block th:replace="~{layout/comm/footer :: footerFragmenr}"></th:block>
+
 <th:block th:replace="~{layout/comm/script :: script}"></th:block>
-
-<th:block layout:fragment="script">
-    <!--각각 페이지에서 필요한 자바스크립트를 작성-->
-
-</th:block>
-
 <script th:inline="javascript">
     document.addEventListener('DOMContentLoaded', function() {
         const searchBtn = document.getElementById('search-btn');
@@ -41,6 +38,78 @@
         });
     });
 </script>
+
+<th:block layout:fragment="script">
+    <!--각각 페이지에서 필요한 자바스크립트를 작성-->
+</th:block>
+<script>
+    $(document).ready(function() {
+        // 카테고리 데이터를 저장할 객체
+        let categoryCache = {};
+
+        // 1차 카테고리 선택 및 하위 카테고리 로드
+        $("div#category_menu").on("mouseenter", "li.has-children", function() {
+            let cur_category = $(this);
+            let cate_code = cur_category.find("a").first().data("cate_code");
+
+            // 캐시된 데이터가 있는 경우 사용
+            if (categoryCache[cate_code]) {
+                showDropdown(cur_category, categoryCache[cate_code]);
+            } else {
+                // 캐시된 데이터가 없는 경우 서버에서 로드
+                loadCategory(cur_category, cate_code);
+            }
+        });
+
+        // 카테고리 데이터 로드 함수
+        function loadCategory(category, cate_code) {
+            let url = "/category/secondcategory/" + cate_code;
+            $.getJSON(url, function(secondcategory_result) {
+                // 결과를 캐시에 저장
+                categoryCache[cate_code] = secondcategory_result;
+                showDropdown(category, secondcategory_result);
+            });
+        }
+
+        // 드롭다운 표시 함수
+        function showDropdown(category, data) {
+            // 이미 드롭다운이 있는 경우 제거
+            category.find("ul.dropdown").remove();
+
+            // 드롭다운 생성
+            let str = '<ul class="dropdown">';
+            for (let i = 0; i < data.length; i++) {
+                str += '<li>';
+                str += `<a class="nav-link active" href="#" data-cate_code="${data[i].cate_code}">${data[i].cate_name}</a>`;
+                str += '</li>';
+            }
+            str += "</ul>";
+            category.append(str);
+        }
+
+        // 드롭다운 숨기기
+        $("div#category_menu").on("mouseleave", "li.has-children", function() {
+            $(this).find("ul.dropdown").remove();
+        });
+
+        // 2차 카테고리 선택
+        $("div#category_menu").on("click", "ul.dropdown li a", function(e) {
+            e.preventDefault();
+            let cate_code = $(this).data("cate_code");
+            let cate_name = encodeURIComponent($(this).text());
+            console.log("2차 카테고리 코드", cate_code);
+            console.log("2차 카테고리 이름", cate_name);
+            location.href = `/product/pro_list?cate_code=${cate_code}&cate_name=${cate_name}`;
+        });
+
+        // 모바일 메뉴 토글
+        $(".js-menu-toggle").click(function() {
+            $(".site-mobile-menu").toggleClass("site-mobile-menu-active");
+        });
+    });
+</script>
+
+
 
 </body>
 

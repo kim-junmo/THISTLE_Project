@@ -2,13 +2,16 @@ package com.docmall.thistle.user;
 
 import com.docmall.thistle.common.mail.EmailDTO;
 import com.docmall.thistle.common.mail.EmailService;
+import com.docmall.thistle.kakaologin.KakaoUserInfo;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.parameters.P;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -195,13 +198,106 @@ public class UserController {
     }
 
     @GetMapping("mypage")
-    public void mypageForm() {
-        log.info("mypage");
+    public void mypageForm(HttpSession session, Model model) throws Exception {
+
+
+        if(session.getAttribute("login_status") != null) {
+            String user_id = ((UserVO) session.getAttribute("login_status")).getUser_id();
+
+            UserVO vo = userService.login(user_id);
+
+            model.addAttribute("user", vo);
+
+        }else if(session.getAttribute("kakao_status") != null) {
+
+            KakaoUserInfo kakaoUserInfo = (KakaoUserInfo) session.getAttribute("kakao_status");
+
+            //Mypage에서 보여줄 정보를 선택적으로 작업.
+            UserVO vo = new UserVO();
+            vo.setUser_name(kakaoUserInfo.getNickname());
+            vo.setUser_email(kakaoUserInfo.getEmail());
+
+            model.addAttribute("user", vo);
+            model.addAttribute("msg", "kakao_login");
+        }
     }
 
     @PostMapping("/modify")
-    public String modifyOK(UserVO vo) throws Exception {
+    public String modifyOK(UserVO vo, HttpSession session, RedirectAttributes rttr) throws Exception {
 
+        if(session.getAttribute("login_status") == null)
+            return "redirect:/user/login";
+
+        log.info("회원 수정 :" + vo);
+
+        String user_id = ((UserVO) session.getAttribute("login_status")).getUser_id();
+        vo.setUser_id(user_id);
+
+        userService.modify(vo);
+
+        rttr.addFlashAttribute("msg", "success");
+
+
+        return "redirect:/user/mypage";
+    }
+
+    @GetMapping("/changepw")
+    public void changepwForm() {
+
+    }
+
+    @PostMapping("changepw")
+    public String changepwOK(String cur_user_password, String new_user_password, HttpSession session, RedirectAttributes rttr) throws Exception {
+
+        String user_id = ((UserVO) session.getAttribute("login_status")).getUser_id();
+
+        UserVO vo = userService.login(user_id);
+
+        String msg = "";
+        String url = "/";
+
+        if(vo != null) {
+            if(passwordEncoder.matches(cur_user_password, vo.getUser_password())) {
+
+                String enc_new_user_password = passwordEncoder.encode(new_user_password);
+                userService.changepw(user_id, enc_new_user_password);
+                msg = "success";
+
+            }else {
+                msg = "failpw";
+            }
+        }
+        rttr.addFlashAttribute("msg", msg);
+
+        return "redirect:/user/changepw";
+    }
+
+    @GetMapping("/delete")
+    public void deleteForm() {
+
+    }
+
+    @PostMapping("/delete")
+    public String deleteOK(String user_password, HttpSession session, RedirectAttributes rttr) throws Exception {
+
+        String user_id = ((UserVO) session.getAttribute("login_status")).getUser_id();
+        UserVO vo = userService.login(user_id);
+
+        String msg = "";
+        String url = "/";
+
+        if(vo != null) {
+            if(passwordEncoder.matches(user_password, vo.getUser_password())) {
+
+                userService.delete(user_id);
+                session.invalidate();
+            }else {
+                msg = "failpw";
+                url = "/user/delete";
+
+                rttr.addAttribute("msg", msg);
+            }
+        }
         return "redirect:/";
     }
 

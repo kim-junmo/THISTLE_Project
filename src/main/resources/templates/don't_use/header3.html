@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+
+<header th:fragment="headerFragment">
+
+
+    <div class="site-mobile-menu">
+        <div class="site-mobile-menu-header">
+            <div class="site-mobile-menu-close">
+                <span class="icofont-close js-menu-toggle"></span>
+            </div>
+        </div>
+        <div class="site-mobile-menu-body"></div>
+    </div>
+
+
+
+    <nav class="site-nav mb-5">
+        <div class="pb-2 top-bar mb-3">
+            <div class="container">
+                <div class="row align-items-center">
+                    <div class="col-6 col-lg-6 text-left">
+                        <a href="#" class="small mr-3 text-black"><span class="d-none d-lg-inline-block">disco8353@gmail.com</span></a>
+                    </div>
+                    <div class="col-6 col-lg-6 text-right">
+                        <!-- session login.status이 null이면 회원가입, 로그인을 보여준다 -->
+                        <!--  즉 로그인을 하지 않으면 해당 메뉴가 나타나게 된다.-->
+                        <th:block th:if="${session.login_status == null}">
+                            <a th:href="@{/user/join}" class="small mr-3 text-black">회원가입</a>
+                            <a th:href="@{/user/login}" class="small mr-3 text-black">LogIn</a>
+                        </th:block>
+
+                        <!-- session login.status이 null이 아니면 로그아웃을 보여준다  -->
+                        <!-- 로그인을 하면 로그아웃 창이 나타난다.-->
+                        <th:block th:if="${session.login_status != null}">
+                            <a th:href="@{/user/logout}" class="small mr-3 text-black">Logout</a>
+                        </th:block>
+
+                        <a th:if="${session.login_status != null}" th:href="@{/user/mypage}" class="small mr-3 text-black">MyPage</a>
+                        <a th:if="${session.login_status == null}" th:href="@{/user/login}" class="small mr-3 text-black">MyPage</a>
+                        <a href="#" class="small mr-3 text-black">장바구니</a>
+                        <a href="#" class="small mr-3 text-black">주문정보</a>
+                    </div>
+                </div>
+            </div>
+            <br>
+            <div class="sticky-nav js-sticky-header">
+                <div class="container position-relative">
+                    <div class="site-navigation text-center">
+                        <a href="/static" class="logo menu-absolute m-0">THISTLE<span class="text-primary"></span></a>
+                        <ul class="js-clone-nav d-none d-lg-inline-block site-menu">
+                            <li class="active"><a href="index.html">BRAND STORY</a></li>
+                            <li class="has-children">
+                                <a href="#">SKIN</a>
+                                <ul class="dropdown">
+                                    <li><a href="elements.html">스킨/로션</a></li>
+                                    <li><a href="#">에센스/앰플</a></li>
+                                    <li><a href="#">크림</a></li>
+                                    <li><a href="#">마스크</a></li>
+                                    <li><a href="#">클렌징</a></li>
+                                </ul>
+                            </li>
+                            <li class="has-children">
+                                <a href="#">HAIR</a>
+                                <ul class="dropdown">
+                                    <li><a href="elements.html">샴푸</a></li>
+                                    <li><a href="#">트리트먼트/헤어팩</a></li>
+                                    <li><a href="#">오일/에센스</a></li>
+                                </ul>
+                            </li>
+                            <li class="has-children">
+                                <a href="#">BODY</a>
+                                <ul class="dropdown">
+                                    <li><a href="elements.html">바디워시/스크럽</a></li>
+                                    <li><a href="#">바디로션/크림</a></li>
+                                </ul>
+                            </li>
+                            <li class="has-children">
+                                <a href="#">FRAGRANCE</a>
+                                <ul class="dropdown">
+                                    <li><a href="elements.html">향수</a></li>
+                                    <li><a href="#">홈프래그런스</a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                        <a href="#" id="search-btn" class="btn-book btn btn-secondary btn-sm menu-absolute"><i class="fas fa-shopping-cart"></i> Search</a>
+                        <a href="#" class="burger ml-auto float-right site-menu-toggle js-menu-toggle d-inline-block d-lg-none light" data-toggle="collapse" data-target="#main-navbar">
+                            <i class="fas fa-bars"></i>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div id="search-area" class="search-area">
+            <div class="container">
+                <div class="row">
+                    <div class="col-lg-12">
+                        <span class="close-btn"><i class="fas fa-window-close"></i></span>
+                        <div class="search-bar">
+                            <div class="search-bar-tablecell">
+                                <h3>Search For:</h3>
+                                <input type="text" placeholder="Keywords">
+                                <button type="submit">Search <i class="fas fa-search"></i></button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+</header>
+
+</html>

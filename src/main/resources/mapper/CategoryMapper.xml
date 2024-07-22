@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.docmall.thistle.common.category.CategoryMapper">
+
+    <select id="getFirstCategoryList" resultType="CategoryVO">
+        select
+            cate_code, cate_prtcode, cate_name
+        from
+            cate_tbl
+        where
+            cate_prtcode is null
+    </select>
+
+    <select id="getSecondCategoryList" resultType="CategoryVO">
+        SELECT
+            cate_code, cate_prtcode, cate_name
+        FROM
+            cate_tbl
+        WHERE
+            cate_prtcode = #{cate_prtcode}
+    </select>
+
+    <select id="getFirstCategoryBySecondCategory" resultType="CategoryVO">
+        SELECT
+            cate_code, cate_prtcode, cate_name
+        FROM
+            cate_tbl
+        WHERE
+            cate_code = #{cate_code}
+
+    </select>
+</mapper>

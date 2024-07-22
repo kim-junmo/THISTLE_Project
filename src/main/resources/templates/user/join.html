@@ -3,10 +3,6 @@
       xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
       layout:decorate="~{/layout/baseLayout}">
 
-<th:block layout:fragment="css">
-    <!-- 각 페이지의 css -->
-    <link th:href="@{../../static/css/join/join.css}" rel="stylesheet">
-</th:block>
 
 <body data-bs-spy="scroll" data-bs-target="#navbar" data-bs-root-margin="0px 0px -40%" data-bs-smooth-scroll="true" tabindex="0">
 
@@ -19,7 +15,7 @@
     <br>
     <br>
     <br>
-    <main role="main" class="container" style="max-width: 600px;">
+    <main role="main" class="container" style="max-width: 800px;">
         <h1 class="mt-5 mb-5 text-center">Welcome to THISTLE</h1>
         <div class="card mt-5">
             <div class="card-header">
@@ -41,7 +37,8 @@
                         <div class="mb-3">
                             <label for="user_password" class="form-label">비밀번호 *</label>
                             <input type="password" class="form-control" id="user_password" name="user_password" required>
-                            <small class="form-text text-muted">(영문 대소문자/숫자/특수문자 중 2가지 이상 조합, 10자~16자)</small>
+                            <small class="form-text text-muted">(영문 대소문자/숫자/특수문자 중 2가지 이상 조합, 10자~16자)
+                            <span class="col-sm-2" id="pwCheckMsg" style="color: red;"></span></small>
                         </div>
                         <div class="mb-3">
                             <label for="u_confirm_pwd" class="form-label">비밀번호 확인 *</label>
@@ -280,24 +277,34 @@
                 });
             });
 
-            //회원가입 클릭
-            // 1), 2) 코드는 양립할 수가 없다.
-            //1) <button type="submit" class="btn btn-info" id="btnJoin">Sign up</button> -> click이벤트 사용안됨, form submit이벤트 사용.
-            // $("#joinForm").on("submit", function(e){
-            //     e.preventDefault();
-            //     console.log("submit event");
-            //     return;
-            // });
+            $(document).ready(function () {
 
 
-            //2) <button type="button" class="btn btn-info" id="btnJoin">Sign up</button> -> click이벤트 사용
-            $("#btnJoin").on("click", function() {
-                //console.log("click event");
+                $("#btnJoin").on("click", function () {
 
-                //회원가입 유효성 검사. 자바스크립트의 정규식을 통해 작성해야 됨.
 
-                $("#joinForm").submit();
-            });
+                    if ($("#user_password").val() != $("#u_confirm_pwd").val()) {
+
+                        alert("입력하신 비밀번호가 일치하지 않습니다.");
+
+                        $("#u_confirm_pwd").focus();
+                        $("#u_confirm_pwd").val('');
+
+                    } else {
+                        $("#joinForm").submit();
+                    }
+                    });
+
+
+                });
+
+
+
+
+
+
+
+
         }); //read event end
 
     </script>

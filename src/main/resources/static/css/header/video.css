@@ -32,6 +32,8 @@
 }
 .renew2024-section--video .video-wrap {
     background-color: #000;
+    position: relative; /* Add position: relative for the video-door */
+    transition: transform 1.5s cubic-bezier(0.395, 0.005, 0.19, 1); /* Add transition for the video wrap */
 }
 .renew2024-section--video .video-wrap video {
     display: block;
@@ -57,10 +59,12 @@
 .renew2024-section--video .video-door--left {
     left: 0;
     background-color: #fff;
+    transition: transform 1.5s cubic-bezier(0.395, 0.005, 0.19, 1); /* Add transition for the video door */
 }
 .renew2024-section--video .video-door--right {
     right: 0;
     background-color: #fff;
+    transition: transform 1.5s cubic-bezier(0.395, 0.005, 0.19, 1); /* Add transition for the video door */
 }
 .renew2024-section--video .ap2022-video-script-box {
     max-width: 1420px;

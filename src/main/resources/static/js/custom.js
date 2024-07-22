@@ -9,25 +9,22 @@ $(function(){
 	'use strict';
 
 	$(".loader").delay(200).fadeOut("slow");
-	$("#overlayer").delay(200).fadeOut("slow");	
+	$("#overlayer").delay(200).fadeOut("slow");
 
 	var siteMenuClone = function() {
-
 		$('.js-clone-nav').each(function() {
 			var $this = $(this);
 			$this.clone().attr('class', 'site-nav-wrap').appendTo('.site-mobile-menu-body');
 		});
 
-
 		setTimeout(function() {
-			
 			var counter = 0;
 			$('.site-mobile-menu .has-children').each(function(){
 				var $this = $(this);
-				
+
 				$this.prepend('<span class="arrow-collapse collapsed">');
 
-				$this.find('.arrow-collapse').attr({
+				$this.find('> .arrow-collapse').attr({
 					'data-toggle' : 'collapse',
 					'data-target' : '#collapseItem' + counter,
 				});
@@ -38,10 +35,27 @@ $(function(){
 				});
 
 				counter++;
-
 			});
 
+			// 모바일 환경에서 1차 카테고리 클릭 이벤트 처리
+			$('.site-mobile-menu .has-children > a').on('click', function(e) {
+				e.preventDefault();
+				var $this = $(this);
+				var parent = $this.parent();
+				var cate_code = $this.data('cate_code');
+
+				if (!parent.hasClass('active')) {
+					loadSecondCategory(parent, cate_code);
+				}
+
+				parent.toggleClass('active');
+				parent.find('> .collapse').toggleClass('show');
+			});
+
+			// 불필요한 클래스 제거
+			$('.site-mobile-menu .dropdown').removeClass('dropdown');
 		}, 1000);
+
 
 		$('body').on('click', '.arrow-collapse', function(e) {
 			var $this = $(this);
@@ -90,6 +104,30 @@ $(function(){
 		});
 	}; 
 	siteMenuClone();
+
+	// 2차 카테고리 로드 함수
+	function loadSecondCategory(element, cate_code) {
+		if ($(element).find('.collapse').children().length === 0) {
+			let url = "/category/secondcategory/" + cate_code;
+			$.getJSON(url, function(secondcategory_result) {
+				let str = '';
+				for (let i = 0; i < secondcategory_result.length; i++) {
+					str += '<li>';
+					str += `<a href="#" data-cate_code="${secondcategory_result[i].cate_code}">${secondcategory_result[i].cate_name}</a>`;
+					str += '</li>';
+				}
+				$(element).find('.collapse').html(str);
+			});
+		}
+	}
+
+	// 2차 카테고리 선택 이벤트
+	$('.site-mobile-menu').on('click', '.collapse a', function(e) {
+		e.preventDefault();
+		let cate_code = $(this).data("cate_code");
+		let cate_name = encodeURIComponent($(this).text());
+		location.href = `/product/pro_list?cate_code=${cate_code}&cate_name=${cate_name}`;
+	});
 
 	var owlPlugin = function() {
 		if ( $('.owl-3-slider').length > 0 ) {

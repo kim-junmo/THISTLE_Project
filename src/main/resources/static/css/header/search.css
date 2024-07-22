@@ -15,7 +15,7 @@ a.mobile-show.search-bar-icon {
     left: 0;
     top: 0;
     z-index: 5555;
-    background-color: #bbb8d3;
+    background-color: rgba(217, 189, 250, 0.95);
     width: 100%;
     height: 100%;
     text-align: center;
@@ -58,7 +58,7 @@ a.mobile-show {
     padding: 15px;
     width: 60%;
     background-color: transparent;
-    border-bottom: 1px solid #D8BDF8;
+    border-bottom: 1px solid #D9BDFA;
     display: block;
     margin: 0 auto;
     text-align: center;
@@ -70,7 +70,7 @@ a.mobile-show {
 
 .search-bar-tablecell button[type=submit] {
     border: none;
-    background-color: #D8BDF8;
+    background-color: rgba(74, 21, 137, 0.5);
     padding: 15px 30px;
     cursor: pointer;
     display: inline-block;

@@ -1,6 +1,7 @@
 package com.docmall.thistle.user;
 
 import lombok.RequiredArgsConstructor;
+import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Service;
 
 import java.util.Random;
@@ -40,4 +41,39 @@ public class UserService {
     public void tempPwUpdate(String user_id, String temp_enc_pw) {
         userMapper.tempPwUpdate(user_id, temp_enc_pw);
     }
+
+    //내 정보 수정
+    public void modify(UserVO vo) {
+        userMapper.modify(vo);
+    }
+
+    //비밀번호 변경
+    public void changepw(String user_id, String new_user_password) {
+        userMapper.changepw(user_id, new_user_password);
+    }
+
+    //회원 탈퇴
+    public void delete(String user_id) {
+        userMapper.delete(user_id);
+    }
+
+    //sns
+    public String existUserInfo(String sns_email) {
+        return userMapper.existUserInfo(sns_email);
+    }
+
+    //sns 사용자 중복체크
+    public String sns_user_check(String sns_email) {
+        return userMapper.sns_user_check(sns_email);
+    }
+
+    //sns 데이터 삽입
+    public void sns_user_insert(SNSUserDTO dto) {
+        userMapper.sns_user_insert(dto);
+    }
+
+
+
+
+
 }

@@ -1,0 +1,120 @@
+<!doctype html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{/layout/baseLayout}">
+<head>
+
+
+    <title>THISTLE</title>
+</head>
+
+<body>
+<th:block layout:fragment="content">
+    <div class="untree_co-hero overlay" style="background-image: url('/images/THISTLE_Flower.jpg'); z-index: 0;">
+        <div class="container" style="z-index: 1;">
+            <div class="row align-items-center justify-content-center">
+                <div class="col-12">
+                    <div class="row justify-content-center ">
+                        <div class="col-lg-6 text-center ">
+                            <h1 class="mb-4 heading text-white" data-aos="fade-up" data-aos-delay="100">MyPage</h1>
+                        </div>
+                    </div>
+                </div>
+            </div> <!-- /.row -->
+        </div> <!-- /.container -->
+    </div> <!-- /.untree_co-hero -->
+
+
+
+
+    <div class="untree_co-section">
+        <div class="container">
+
+                <div class="col-lg-9 mx-auto order-1" data-aos="fade-up" data-aos-delay="200">
+                    <form class="form-box" id="changepwForm" th:action="@{/user/changepw}" method="post">
+                        <div class="row mb-5 justify-content-center">
+                            <div class="mb-3 text-sm-center">
+                                <h3 class="mb-2">카테고리</h3>
+                                <ul class="list-unstyled">
+                                    <li><a href="/user/modify">정보 수정</a>&nbsp;/&nbsp;
+                                        <a href="/user/changepw">비밀번호 변경</a>&nbsp;/&nbsp;
+                                        <a href="/user/delete">회원 탈퇴</a>&nbsp;/&nbsp;
+                                        <a href="/user/logout">logout</a></li>
+                                </ul>
+                            </div>
+                        </div>
+
+
+                        <div class="card-body">
+
+                            <h5 class="mb-3">비밀번호 변경 <small class="text-sm-left">(* 필수사항)</small></h5>
+                            <div class="mb-3">
+                                <label for="cur_user_password" class="form-label">현재 비밀번호 *</label>
+                                <input type="password" class="form-control" id="cur_user_password"  name="user_password" required>
+                            </div>
+                            <div class="mb-3">
+                                <label for="new_user_password" class="form-label">신규 비밀번호 *</label>
+                                <input type="password" class="form-control" id="new_user_password" name="new_user_password" required>
+                            </div>
+                            <div class="mb-3">
+                                <label for="new_user_password_2" class="form-label">신규 비밀번호 확인 *</label>
+                                <input type="password" class="form-control" id="new_user_password_2" name="new_user_password_2" required>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            <div class="mt-4 text-center">
+                <button type="button" class="btn btn-info" id="btnchangepw">수정</button>
+                <button type="reset" class="btn btn-secondary ml-2">취소</button>
+            </div>
+        </div>
+    </div>
+            <br>
+            <br>
+            <br>
+            <br>
+            <br>
+
+</th:block>
+
+<th:block layout:fragment="script">
+
+    <!-- 각각의 페이지에서 필요한 자바스크립트 작성 -->
+
+    <script th:inline="javascript">
+
+        let msg = [[${msg}]];
+        if(msg == "success") {
+            alert("비밀번호가 변경되었습니다.")
+        }else if(msg == "failpw") {
+            alert("비밀번호를 확인해주세요")
+        }
+
+        $(document).ready(function() {
+
+            //메일인증코드요청
+            $("#btnMailAuthcode").on("click", function() {
+
+                if($("#user_email").val() == "") {
+                    alert("현재 비밀번호를 입력해주세요.");
+                    $("#user_email").focus();
+                    return;
+                }
+
+                if($("#new_user_password").val() != $("#new_user_password_2").val()) {
+                    alert("입력하신 신규비밀번호가 동일하지 않습니다.");
+                    $("#new_user_password").focus();
+                    $("#new_user_password").val("");
+                    return;
+
+                    $("#changepwForm").submit();
+                });
+
+            }); //read event end
+
+
+    </script>
+</th:block>
+
+</body>
+</html>

@@ -21,4 +21,24 @@ public interface UserMapper {
 
     //임시비밀번호
     void tempPwUpdate(@Param("user_id") String user_id, @Param("temp_enc_ow") String temp_enc_ow);
+
+    // 내 정보 수정
+    void modify(UserVO vo);
+
+    //비밀번호 변경
+    void changepw(@Param("user_id") String user_id, @Param("new_user_password") String new_user_password);
+
+    //회원 탈퇴
+    void delete(String user_id);
+
+    //sns 가입
+    String existUserInfo(String sns_email);
+
+    //sns 유저 중복체크
+    String sns_user_check(String sns_email);
+
+    //sns 데이터 삽입
+    void sns_user_insert(SNSUserDTO dto);
+
+
 }
