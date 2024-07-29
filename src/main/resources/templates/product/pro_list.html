@@ -159,9 +159,9 @@
                 let pro_num = $(this).data("pro_num");
                 let cart_amount = $("#btn_cart_amount").val();
 
-                let url = `/order/orderinfo?pro_num=${pro_num}&cart_amount=${cart_amount}`;
-
+                let url = `/order/orderinfo?pro_num=${pro_num}&cart_amount=${cart_amount}&type=direct`;
                 location.href = url;
+                // location.href = "/order/orderinfo?type=direct";
             });
 
             // 장바구니추가  modal2 pro_info.html  id="btn_cart_add"

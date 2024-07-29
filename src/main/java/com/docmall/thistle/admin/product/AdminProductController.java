@@ -2,6 +2,7 @@ package com.docmall.thistle.admin.product;
 
 import com.docmall.thistle.common.category.CategoryService;
 import com.docmall.thistle.common.category.CategoryVO;
+import com.docmall.thistle.common.constants.Constants;
 import com.docmall.thistle.common.dto.Criteria;
 import com.docmall.thistle.common.dto.PageDTO;
 import com.docmall.thistle.common.util.FileManagerUtils;
@@ -10,6 +11,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
@@ -18,9 +20,11 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
-import java.io.FileOutputStream;
-import java.io.OutputStream;
-import java.io.PrintWriter;
+import java.io.*;
+import java.net.URLDecoder;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
 import java.util.List;
 
 @RequestMapping("/admin/product/*")
@@ -81,78 +85,98 @@ public class AdminProductController {
         // 상품 목록 페이지로 리다이렉트합니다.
     }
 
+    //ckeditor 상품 설명 이미지 업로드
+    //MultipartFile upload : ckeditor 업로드 탭에서 나온 파일 첨부 태그 파라미터(<input type="file" name="upload">)를 참조함.
+    //MultipartFile upload : 첨부된 파일정보를 가지고 있음.
+    //HttpServletRequest request : 클라이언트의 요청정보를 가지고 있는 객체.
+    //HttpServletResponse response : 서버에서 클라이언트에게 보낸 정보를 응답하는 객체.
     @PostMapping("/imageupload")
-// "/imageupload" URL에 대한 POST 요청을 처리하는 메서드를 정의합니다.
+    public void imageupload(HttpServletRequest request, HttpServletResponse response, MultipartFile upload) {
 
-    public void imageuploadOK(HttpServletRequest request, HttpServletResponse response, MultipartFile upload) throws Exception {
-// CKEditor의 이미지 업로드 요청을 처리하는 메서드입니다.
-
+        //입출력 스트림으로 OutputStream을 사용함. 자바의 입출력 스트림 공부해서 정리할 필요가 있음.
         OutputStream out = null;
+        //PrintWriter: 서버에서 클라이언트에게 응답정보를 보낼때 사용.(업로드한 이미지 정보를 클라이언트(브라우저)에게 보내는 작업용도)
         PrintWriter printWriter = null;
-        // OutputStream과 PrintWriter 객체를 선언합니다.
 
         try {
-            String fileName = upload.getOriginalFilename();
-            // 업로드된 파일의 원본 이름을 가져옵니다.
+            //1)ckeditor를 통한 파일 업로드 처리 기능.
+            String OriginalfileName = upload.getOriginalFilename(); //업로드 할 클라이언트 파일 이름.
+            String fileName = URLEncoder.encode(OriginalfileName, StandardCharsets.UTF_8.toString());
+            byte[] bytes = upload.getBytes(); //업로드 할 파일의 바이트 배열
 
-            byte[] bytes = upload.getBytes();
-            // 파일 데이터를 바이트 배열로 가져옵니다.
+            if(!uploadCKPath.endsWith("/") && !uploadCKPath.endsWith("\\")) {
+                uploadCKPath += System.getProperty("file.separator");
+            }
 
+            //uploadCKPath + fileName : "C:\\dev\\upload\\ckeditor\\" + "fileName(ex. abc.gif)
+            //그렇기 때문에 경로에 \\가 들어가 있어야 함. 없으면 C:\\dev\\upload\\ckeditorabc.gif 이렇게 됨.
             String ckUploadPath = uploadCKPath + fileName;
-            // 파일이 저장될 전체 경로를 생성합니다.
 
+            //C:\\dev\\upload\\ckeditor\\abc.gif 이 한줄에 의해 파일이 생성이 된다.
+            //이때 파일은 0byte로 생성이 된다.
             out = new FileOutputStream(ckUploadPath);
-            // 파일을 쓰기 위한 OutputStream을 생성합니다.
 
-            out.write(bytes);
-            out.flush();
-            // 파일 데이터를 쓰고 버퍼를 비웁니다.
+            out.write(bytes); //빨때(스트림)의 공간에 업로드할 파일의 바이트 배열을 채운 상태.
+            out.flush(); //0byte의 파일의 크기가 채워진 정상적인 파일로 인식이 된다.
 
+            //2)업로드한 이미지 파일에 대한 정보를 클라이언트에게 보내는 작업.
             printWriter = response.getWriter();
-            // 응답을 위한 PrintWriter를 가져옵니다.
 
-            String fileUrl = "/admin/product/display/" + fileName;
-            // 업로드된 파일의 URL을 생성합니다.
+            //이메일 첨부 시 이미지가 깨지는 문제 발생, 상수 Constants에 도메인 주소를 넣어 사용하면 깨지지 않음.
+            String fileUrl = Constants.ROOT_URL + "/admin/product/display/" + fileName; //매핑주소/이미지파일명
+            //String fileUrl = fileName;
 
-            printWriter.println("{\"fileName\" :\"" + fileName + "\", \"uploaded\":1,\"url\":\"" + fileUrl + "\"}");
-            printWriter.flush();
-            // CKEditor에서 요구하는 형식의 JSON 응답을 생성하고 전송합니다.
+            //ckeditor 4.1.2에서는 파일정보를 다음과 같이 구성하여 보내야 한다.
+            //{"fileName" : "abc.gif", "uploaded":1, "url":"/ckupload/abc.gif"} : 자바스트의 제이슨 문법 스타일.
+            //{"fileName" : "변수", "uploaded":1, "url":"변수"}
+            //즉 변수 값을 포함하는 JSON 문자열을 생성하고 출력하는 예제이다. 스트림에 내용을 채움.
+            printWriter.println("{\"fileName\" :\"" + OriginalfileName + "\", \"uploaded\":1,\"url\":\"" + fileUrl + "\"}"); //스프림에 채움.
+            printWriter.flush(); //println의 정보가 브라우저로 보내진다.
 
-        } catch (Exception ex) {
+        }catch (Exception ex) {
             ex.printStackTrace();
-        } finally {
+        }finally {
             if(out != null) {
                 try {
                     out.close();
-                } catch (Exception ex) {
+                }catch(Exception ex) {
                     ex.printStackTrace();
                 }
             }
             if(printWriter != null) printWriter.close();
-            // 사용한 리소스를 닫습니다.
         }
     }
 
+    //<img src="매핑주소">를 통해 이미지를 제공하는 핸들러
     @GetMapping("/display/{fileName}")
-// "/display/{fileName}" URL에 대한 GET 요청을 처리하는 메서드를 정의합니다.
-
     public ResponseEntity<byte[]> getFile(@PathVariable("fileName") String fileName) {
-// 파일을 표시하는 메서드입니다. 파일 이름을 경로 변수로 받습니다.
-
-        log.info("파일이미지:" + fileName);
-        // 파일 이름을 로그에 출력합니다.
+        log.info("파일이미지: " + fileName);
 
         ResponseEntity<byte[]> entity = null;
-        // ResponseEntity 객체를 선언합니다.
 
         try {
-            entity = FileManagerUtils.getFile(uploadCKPath, fileName);
-            // FileManagerUtils를 사용하여 파일을 가져옵니다.
-        } catch (Exception ex) {
-            ex.printStackTrace();
+            String decodedFileName = URLDecoder.decode(fileName, StandardCharsets.UTF_8.toString());
+            File file = new File(uploadCKPath + decodedFileName);
+
+            if (!file.exists()) {
+                return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+            }
+
+            byte[] fileContent = Files.readAllBytes(file.toPath());
+
+
+            HttpHeaders headers = new HttpHeaders();
+            headers.add(HttpHeaders.CONTENT_TYPE, Files.probeContentType(file.toPath()));
+            headers.add(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + decodedFileName + "\"");
+
+            entity = new ResponseEntity<>(fileContent, headers, HttpStatus.OK);
+
+        } catch (IOException e) {
+            e.printStackTrace();
+            entity = new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
+
         return entity;
-        // ResponseEntity를 반환합니다.
     }
 
     @GetMapping("/pro_list")

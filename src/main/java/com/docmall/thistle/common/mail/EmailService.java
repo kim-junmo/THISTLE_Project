@@ -1,6 +1,6 @@
 package com.docmall.thistle.common.mail;
 
-import com.docmall.thistle.common.constants.constants;
+import com.docmall.thistle.common.constants.Constants;
 import jakarta.mail.internet.InternetAddress;
 import jakarta.mail.internet.MimeMessage;
 import lombok.RequiredArgsConstructor;
@@ -20,7 +20,7 @@ public class EmailService {
     private final SpringTemplateEngine templateEngine;  // 스프링 템플릿 엔진 (중복 선언, 하나만 필요함)
 
     public void sendMail(String type, EmailDTO dto, String authcode) {  // 이메일을 보내는 메서드
-        type = constants.MAILFOLDNAME + "/" + type;  // 이메일 템플릿 경로 설정
+        type = Constants.MAILFOLDNAME + "/" + type;  // 이메일 템플릿 경로 설정
 
         MimeMessage mimeMessage = mailSender.createMimeMessage();  // 이메일 메시지 생성
 
