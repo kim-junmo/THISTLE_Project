@@ -11,4 +11,8 @@ public class PayInfoService {
 
     private final PayInfoMapper payInfoMapper;
 
+    public PayInfoVO ord_pay_info(Long ord_code){
+        return payInfoMapper.ord_pay_info(ord_code);
+    }
+
 }

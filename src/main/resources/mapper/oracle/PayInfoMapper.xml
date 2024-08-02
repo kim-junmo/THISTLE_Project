@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.docmall.thistle.payinfo.PayInfoMapper">
+
+    <insert id="payinfo_insert" parameterType="PayInfoVO">
+        INSERT INTO
+            payinfo_tbl(p_id, ord_code, user_id, paymethod, payinfo, p_price, p_status)
+        VALUES
+            (seq_payinfo_id.NEXTVAL, #{ord_code}, #{user_id}, #{paymethod}, #{payinfo}, #{p_price}, #{p_status})
+    </insert>
+
+    <select id="ord_pay_info" resultType="PayInfoVO" parameterType="Long">
+        SELECT
+            p_id, ord_code, user_id, paymethod, payinfo, p_price, p_status, p_date
+        FROM
+            payinfo_tbl
+        WHERE
+            ord_code = #{ord_code}
+    </select>
+
+    <update id="pay_tot_price_change" parameterType="Long">
+        UPDATE
+            payinfo_tbl
+        set
+            p_price = (
+                SELECT SUM(dt_amount * dt_price)
+                FROM ordetail_tbl
+                WHERE ord_code = #{ord_code}
+                )
+        WHERE
+            ord_code = #{ord_code}
+    </update>
+
+</mapper>

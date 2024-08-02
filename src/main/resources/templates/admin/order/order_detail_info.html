@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="UTF-8">
+<title>Insert title here</title>
+</head>
+<body>
+<h3>주문 상품정보</h3>
+<table class="table">
+  <thead class="thead-light">
+    <tr>
+      <th>번호</th>
+      <th scope="col">주문상품</th>
+      <th scope="col">판매가</th>
+      <th scope="col">수량</th>
+      <th scope="col">주문금액</th>
+      <th scope="col">비고</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr th:each="ord_product, status : ${ord_product_list}">
+      <td th:text="${status.count}"></td>
+      <td>
+		<a class="move" href="#">
+		<!-- /*/    /*/-->
+			<img th:src="${'/admin/order/image_display?dateFolderName=' + ord_product.pro_up_folder + '&fileName=s_' + ord_product.pro_img}" style="width: 70px; height: 100;">
+		</a>
+		<a class="move pro_name" href="#" th:text="${ord_product.pro_name}"></a>
+	  </td>
+	  <td th:text="${ord_product.dt_price}">Otto</td>
+      <td th:text="${ord_product.dt_amount}">Otto</td>
+      <td th:text="${ord_product.dt_amount * ord_product.dt_price}">Otto</td>
+      <td scope="col">
+      	<button type="button" class="btn btn-dark" th:data-pro_num="${ord_product.pro_num}">삭제</button>
+      </td>
+    </tr>
+  </tbody>
+</table>
+<hr>
+<h3>결제정보</h3>
+<table class="table">
+  <thead class="thead-light">
+    <tr>
+      <th scope="col">결제방식</th>
+      <td scope="col">무통장</td>
+      <th scope="col">결제금액</th>
+      <td scope="col">450000</td>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>입금자명</th>
+      <td>홍길동</td>
+      <th>입금계좌</th>
+      <td>농협 123</td>
+    </tr>
+    <tr>
+      <th>현금영수증 방식</th>
+      <td>사업자</td>
+      <th>연락처 및 사업자번호</th>
+      <td>010-2222-3333</td>
+    </tr>
+  </tbody>
+</table>
+<hr>
+<h3>주문자(수령인)정보</h3>
+<table class="table">
+  <thead class="thead-light">
+    <tr>
+      <th scope="col">수령인</th>
+      <td scope="col">
+      	<input type="text" th:value="${ord_basic.ord_name}">
+      </td>
+      <th scope="col">전화번호</th>
+      <td scope="col">
+		<input type="text" th:value="${ord_basic.ord_tel}">
+	  </td>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th scope="col">주소</th>
+      <td colspan="3">
+      <button type="button" class="btn btn-outline-primary" onclick="sample2_execDaumPostcode()">우편번호</button>
+      <input type="text" class="form-control" id="sample2_postcode" name="user_zipcode"  th:value="${ord_basic.ord_addr_zipcode}" placeholder="우편번호를 입력하세요">
+      <input type="text" class="form-control" id="sample2_address" name="user_addr"  th:value="${ord_basic.ord_addr_basic}" placeholder="주소를 입력하세요">
+      <input type="text" class="form-control" id="sample2_detailAddress" name="user_deaddr"  th:value="${ord_basic.ord_addr_detail}" placeholder="상세주소를 입력하세요">
+      <input type="hidden" id="sample2_extraAddress" placeholder="참고항목">
+	  </td>
+    </tr>
+    <tr>
+      <th scope="col" >베송메모</th>
+      <td colspan="3">
+      	<textarea rows="", cols="70" th:text="${ord_basic.ord_desc}">배송내용...........</textarea>
+      </td>
+    </tr>
+  </tbody>
+</table>
+<hr>
+<h3>관리자 메모</h3>
+	<textarea rows="", cols="85">관리내용</textarea>
+
+</body>
+</html>

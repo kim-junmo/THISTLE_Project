@@ -1,0 +1,177 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.docmall.thistle.admin.adminorder.AdminOrderMapper">
+
+    <sql id="criteria">
+        <trim prefix="(" suffix=") AND" prefixOverrides="OR">
+            <foreach collection="cri.typeArr" item="type">
+                <trim prefix="OR">
+                    <choose>
+                        <when test="type == 'N'.toString()">
+                            ord_name like '%' || #{cri.keyword} || '%'
+                        </when>
+                        <when test="type == 'C'.toString()">
+                            ord_code like '%' || #{cri.keyword} || '%'
+                        </when>
+                        <when test="type == 'I'.toString()">
+                            user_id like '%' || #{cri.keyword} || '%'
+                        </when>
+                    </choose>
+                </trim>
+            </foreach>
+        </trim>
+    </sql>
+
+    <sql id="period">
+        <if test="start_date != null and !start_date.equals('') and end_date != null and !end_date.equals('')">
+            <![CDATA[
+            ord_regdate >= to_data(#{start_date}) AND ord_regdate < to_data(#{start_date}) + 1 AND
+            ]]>
+        </if>
+    </sql>
+
+    <select id="order_list" resultType="OrderVO">
+        SELECT
+        ord_code, user_id, ord_name, ord_addr_zipcode, ord_addr_basic, ord_addr_detail, ord_tel, ord_price, ord_desc, ord_regdate
+        FROM (
+            SELECT /*+ INDEX_DESC(order_tbl pk_ord_code)  */
+            ROWNUM AS RN, ord_code, user_id, ord_name, ord_addr_zipcode, ord_addr_basic, ord_addr_detail, ord_tel, ord_price, ord_desc, ord_regdate
+            FROM
+            order_tbl
+            WHERE
+
+            <include refid="criteria"></include> <!-- 검색기능을 한다. -->
+            <include refid="period"></include>
+
+            <![CDATA[
+                        ROWNUM <= (#{cri.pageNum} * #{cri.amount})
+                    ]]>  --페이지번호 * 페이지별 출력건수
+            )
+        WHERE
+        RN > (#{cri.pageNum} - 1 ) * #{cri.amount}
+    </select>
+
+    <select id="order_list2" resultType="hashmap">
+
+        <!--
+            이 쿼리는 주문 리스트를 조회하는 쿼리입니다.
+            주문 정보, 주문 상세 정보, 제품 정보를 조인하여 결과를 반환합니다.
+        -->
+        SELECT
+            -- 주문 테이블에서 가져올 컬럼들
+            o.ord_code,               <!-- 주문 코드 -->
+            o.user_id,                <!-- 사용자 ID -->
+            o.ord_name,               <!-- 주문자 이름 -->
+            o.ord_addr_zipcode,       <!-- 주소 우편번호 -->
+            o.ord_addr_basic,         <!-- 주소 기본 부분 -->
+            o.ord_addr_detail,        <!-- 주소 상세 부분 -->
+            o.ord_tel,                <!-- 전화번호 -->
+            o.ord_price,              <!-- 주문 가격 -->
+            o.ord_regdate,            <!-- 주문 날짜 -->
+
+            -- 주문 상세 테이블에서 가져올 컬럼들
+            ot.ord_code,              <!-- 주문 코드 (주문 테이블과의 조인용) -->
+            ot.dt_amount,             <!-- 제품 수량 -->
+            ot.pro_num,               <!-- 제품 번호 -->
+            ot.dt_price,              <!-- 총 가격 -->
+
+            -- 제품 테이블에서 가져올 컬럼들
+            p.pro_name,               <!-- 제품 이름 -->
+            p.pro_up_folder,          <!-- 제품 업로드 폴더 -->
+            p.pro_img                 <!-- 제품 이미지 -->
+
+        FROM
+            order_tbl o                <!-- 주문 테이블을 o라는 별칭으로 사용 -->
+        INNER JOIN
+            ordetail_tbl ot    <!-- 주문 상세 테이블을 ot라는 별칭으로 사용 -->
+        ON
+            o.ord_code = ot.ord_code  <!-- 주문 테이블의 주문 코드와 주문 상세 테이블의 주문 코드가 같은 레코드만 조인 -->
+        INNER JOIN
+            product_tbl p             <!-- 제품 테이블을 p라는 별칭으로 사용 -->
+        ON
+            ot.pro_num = p.pro_num    <!-- 주문 상세 테이블의 제품 번호와 제품 테이블의 제품 번호가 같은 레코드만 조인 -->
+
+    </select>
+
+    <select id="getTotalCount" resultType="int" parameterType="Criteria">
+
+        SELECT
+        COUNT(*)
+        FROM
+        order_tbl
+        WHERE
+        <include refid="criteria"></include>
+        <include refid="period"></include>
+        ord_code > 0
+
+    </select>
+
+    <select id="order_info" resultType="OrderVO" parameterType="Long">
+        SELECT
+            ord_code, user_id, ord_name, ord_addr_zipcode, ord_addr_basic, ord_addr_detail, ord_tel, ord_price, ord_desc, ord_regdate
+        FROM
+            order_tbl
+        WHERE
+            ord_code = #{ord_code}
+    </select>
+
+    <select id="order_detail_info" resultType="OrderDetailinfoVO" parameterType="Long">
+        SELECT
+            ot.ord_code, ot.pro_num, ot.dt_price, ot.dt_amount, p.pro_name, p.pro_up_folder, p.pro_img
+        FROM
+            ordetail_tbl ot
+        INNER JOIN
+            product_tbl p
+        ON
+            ot.pro_num = p.pro_num
+        WHERE
+            ot.ord_code =#{ord_code}
+    </select>
+
+    <delete id="order_product_delete" parameterType="map">
+        DELETE FROM
+            ordetail_tbl
+        WHERE
+            ord_code = #{ord_code}
+        AND
+            pro_num = #{pro_num}
+    </delete>
+
+    <update id="order_tot_price_change" parameterType="Long">
+        UPDATE
+            order_tbl
+        SET
+            ord_price = (
+                SELECT
+                    (dt_amount * dt_price)
+                FROM
+                    ordetail_tbl
+                WHERE
+                    ord_code = #{ord_code}
+                )
+        WHERE
+            ord_code = #{ord_code}
+    </update>
+
+    <update id="order_basic_modify" parameterType="OrderVO">
+        UPDATE
+            order_tbl
+        SET
+            ord_name = #{ord_name},
+            ord_addr_zipcode = #{ord_addr_zipcode},
+            ord_addr_basic = #{ord_addr_basic},
+            ord_addr_detail = #{ord_addr_detail},
+            ord_tel = #{ord_tel},
+            ord_desc = #{ord_desc},
+            ord_admin_memo = #{ord_admin_memo}
+        WHERE
+            ord_code = #{ord_code}
+    </update>
+
+    <delete id="order_list_delete" parameterType="Long">
+        DELETE FROM
+            order_tbl
+        WHERE
+            ord_code = #{ord_code}
+    </delete>
+</mapper>

@@ -1,0 +1,115 @@
+<!doctype html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{/layout/baseLayout}">
+<head>
+    <title>THISTLE</title>
+</head>
+
+<body>
+<th:block layout:fragment="content">
+    <br>
+    <br>
+    <div class="untree_co-section">
+        <div class="container">
+            <div class="pricing-header px-3 py-3 pt-md-5 pb-md-4 mx-auto text-center">
+                <h3 class="display-6">주문 목록</h3>
+            </div>
+            <br>
+            <th:block th:with="prevDate=1999-11-11">
+                <div th:each="ordlist, iterStat : ${ord_list}">
+                    <th:block th:if="${iterStat.index == 0 or #dates.format(ordlist.ord_regdate, 'yyyy-MM-dd') != #dates.format(prevDate, 'yyyy-MM-dd')}">
+                        <span class="line-bottom mb-4" th:text="${#dates.format(ordlist.ord_regdate, 'yyyy-MM-dd')}"></span>
+                    </th:block>
+                    <span th:text="${prevDate}"></span>
+                    <span th:text="${#dates.format(ordlist.ord_regdate, 'yyyy-MM-dd')}"></span>
+                    <div class="row border p-3 mb-3">
+                        <div class="col-sm-12 text-center" th:if="${#lists.isEmpty(ord_list)}">
+                            <p>주문 정보가 없습니다.</p>
+                        </div>
+                        <div class="col-sm-2" th:if="${!#lists.isEmpty(ord_list)}">
+                            <img th:src="${'/myshop/image_display?dateFolderName=' + ordlist.pro_up_folder + '&fileName=s_' + ordlist.pro_img}" style="width: 100px; height: 120px;" class="img-fluid">
+                        </div>
+                        <div class="col-sm-7">
+                            <h5 th:text="${ordlist.pro_name}"></h5>
+                            <p>
+                                <strong th:text="${#numbers.formatDecimal(ordlist.pro_price, 0, 'COMMA', 0, 'POINT')} + '원'">103,200원</strong>
+                            </p>
+                            <p>
+                                <strong th:text="${ordlist.dt_amount} + '개'"></strong>
+                            </p>
+                        </div>
+                        <div class="col-sm-3 text-right">
+                            <button type="button" class="btn btn-outline-secondary rounded-circle" th:data-pro-num="${orderlist_pro_num}">
+                                <i class="fas fa-shopping-cart"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <th:block th:with="prevDate='${#dates.format(ordlist.ord_regdate, 'yyyy-MM-dd')}'"></th:block>
+                </div>
+            </th:block>
+        </div>
+    </div>
+    <div class="row mt-5">
+        <div class="col-12 text-center">
+            <form id="actionForm" action="" method="">
+                <ul class="list-unstyled custom-pagination">
+                    <li>
+                        <input type="hidden" name="pageNum" id="pageNum" th:value="${pageMaker.cri.pageNum}" />
+                        <input type="hidden" name="amount"  id="amount" th:value="${pageMaker.cri.amount}" />
+                        <input type="hidden" name="type" id="type" th:value="${pageMaker.cri.type}" />
+                        <input type="hidden" name="keyword" id="keyword" th:value="${pageMaker.cri.keyword}" />
+                        <!-- cate_code, cate_name이 actionForm에 추가 되어야 되는 이유는 productcontroller에서 두개가 추가 되어 있기 때문.-->
+                        <input type="hidden" name="cate_code" id="cate_code" th:value="${cate_code}" />
+                        <input type="hidden" name="cate_name" id="cate_name" th:value="${cate_name}" />
+                    </li>
+                </ul>
+            </form>
+        </div>
+        <div class="col-md-12 text-center">
+            <nav aria-label="Pagination Navigation">
+                <ul class="pagination justify-content-center">
+                    <!-- 이전 버튼 표시 -->
+                    <th:block th:if="${pageMaker.prev}">
+                        <ul class="list-unstyled custom-pagination">
+                            <li>
+                                <a th:href="@{${pageMaker.startPage - 1}}" class="movepage">이전</a>
+                            </li>
+                        </ul>
+                    </th:block>
+
+                    <!-- 페이지 번호 출력 -->
+                    <th:block th:with="pageMaker = ${pageMaker}">
+                        <th:block th:each="num : *{#numbers.sequence(pageMaker.startPage, pageMaker.endPage)}">
+                            <ul class="list-unstyled custom-pagination">
+                                <li th:classappend="${pageMaker.cri.pageNum == num} ? 'active' : ''">
+                                    <a class="movepage" th:href="@{${num}}" th:text="${num}"></a>
+                                </li>
+                            </ul>
+                        </th:block>
+                    </th:block>
+
+                    <!-- 다음 버튼 표시 -->
+                    <th:block th:if="${pageMaker.next}">
+                        <ul class="list-unstyled custom-pagination">
+                            <li>
+                                <a th:href="@{${pageMaker.endPage + 1}}" class="movepage">다음</a>
+                            </li>
+                        </ul>
+                    </th:block>
+                </ul>
+            </nav>
+        </div>
+    </div>
+</th:block>
+
+<th:block layout:fragment="script">
+
+    <script th:inline="javascript">
+        $(document).ready(function() {
+        }); //end event
+    </script>
+
+</th:block>
+</body>
+</html>

@@ -6,6 +6,9 @@ public class Constants {
     //메일 설정, 메일 템플릿 폴더
     public static final String MAILFOLDNAME = "email";
 
+    //쇼핑몰 주문정보 리스트 출력개수
+    public static final int MYSHOP_ORDER_LIST_AMOUNT= 2;
+
     //관리자 상품 리스트 출력개수
     public static final int ADMIN_PRODUCT_LIST_AMOUNT= 2;
 

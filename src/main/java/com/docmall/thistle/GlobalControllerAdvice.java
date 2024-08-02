@@ -12,7 +12,7 @@ import java.util.List;
 
 @RequiredArgsConstructor
 @Slf4j
-@ControllerAdvice(basePackages = {"com.docmall.thistle.product","com.docmall.thistle.cart", "com.docmall.thistle.order", "com.docmall.thistle.user"})
+@ControllerAdvice(basePackages = {"com.docmall.thistle.product","com.docmall.thistle.cart", "com.docmall.thistle.order", "com.docmall.thistle.user", "com.docmall.thistle.myshop"})
 public class GlobalControllerAdvice {
 
     private final CategoryService categoryService;

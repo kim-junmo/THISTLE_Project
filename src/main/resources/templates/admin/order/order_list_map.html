@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="UTF-8">
+<title>Insert title here</title>
+</head>
+<body>
+	<table class="table">
+	  <thead class="thead-dark">
+	    <tr>
+	      <th scope="col">주문번호</th>
+	      <th scope="col">아이디</th>
+	      <th scope="col">주문금액</th>
+	      <th scope="col">상품명</th>
+	    </tr>
+	  </thead>
+	  <tbody>
+	    <tr th:each="order :$(order_list)">
+	      <th th:text="$(order['ORD_CODE'])" scope="row">1</th>
+	      <td th:text="$(order['USER_ID'])" >Mark</td>
+	      <td th:text="$(order['ORD_PRICE'])" >Otto</td>
+	      <td th:text="$(order['PRO_NAME'])" >@mdo</td>
+	    </tr>
+	  </tbody>
+	</table>
+</body>
+</html>
