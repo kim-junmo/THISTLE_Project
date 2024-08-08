@@ -26,28 +26,13 @@
     <sql id="period">
         <if test="start_date != null and !start_date.equals('') and end_date != null and !end_date.equals('')"> <!-- 날짜 검색 시 null 또는 공백이 아닐경우 -->
             <![CDATA[
-				ord_regdate >= to_date(#{start_date}) AND ord_regdate < to_date(#{end_date}) + 1 AND
+				AND ord_regdate >= to_date(#{start_date}) AND ord_regdate < to_date(#{end_date}) + 1
 			]]>
         </if>
     </sql>
 
 
-
-
-    <select id="getTotalCount" resultType="int" parameterType="Criteria">
-
-        SELECT
-            COUNT(*)
-        FROM
-            order_tbl
-        WHERE
-            <include refid="criteria"></include>
-            <include refid="period"></include>
-            ord_code > 0
-
-    </select>
-
-        <select id="order_list" resultType="OrderDetailinfoVO"  parameterType="Criteria">
+        <select id="order_list" resultType="OrderDetailinfoVO"  parameterType="map">
             SELECT *
             FROM (
                 SELECT /*+ INDEX_DESC(order_tbl pk_ord_code) */
@@ -72,14 +57,35 @@
                 ON
                     ot.pro_num = p.pro_num
                 WHERE
-                    <include refid="criteria"/> <!-- 검색기능을 한다. -->
-                    <include refid="period"/> <!-- 기간 조건을 포함 -->
+                    o.user_id = #{user_id}
+                    <include refid="criteria"/>
+                    <include refid="period"/>
                     <![CDATA[
-                        ROWNUM <= (#{cri.pageNum} * #{cri.amount})
+                        AND ROWNUM <= (#{cri.pageNum} * #{cri.amount})
                     ]]>
                     )
             WHERE
                 RN > (#{cri.pageNum} - 1) * #{cri.amount}
         </select>
+
+
+    <select id="getTotalCount" resultType="int" parameterType="map">
+
+        SELECT count(*)
+        FROM
+        order_tbl o
+        INNER JOIN
+        ordetail_tbl ot
+        ON
+        o.ord_code = ot.ord_code
+        INNER JOIN
+        product_tbl p
+        ON
+        ot.pro_num = p.pro_num
+        WHERE
+        o.user_id = #{user_id}
+        <include refid="criteria"/> <!-- 검색기능을 한다. -->
+        <include refid="period"/> <!-- 기간 조건을 포함 -->
+    </select>
 
 </mapper>

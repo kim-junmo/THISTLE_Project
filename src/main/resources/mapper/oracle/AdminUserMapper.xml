@@ -1,0 +1,167 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.docmall.thistle.admin.user.AdminUserMapper">
+
+    <sql id="criteria">
+        <trim prefix="AND (" suffix=") " prefixOverrides="OR">
+            <foreach collection="cri.typeArr" item="type">
+                <trim prefix="OR">
+                    <choose>
+                        <when test="type == 'I'.toString()">
+                            user_id like '%' || #{cri.keyword} || '%'
+                        </when>
+                        <when test="type == 'N'.toString()">
+                            user_name like '%' || #{cri.keyword} || '%'
+                        </when>
+                        <when test="type == 'E'.toString()">
+                            user_email like '%' || #{cri.keyword} || '%'
+                        </when>
+                    </choose>
+                </trim>
+            </foreach>
+        </trim>
+    </sql>
+
+    <sql id="period">
+        <if test="start_date != null and !start_date.equals('') and end_date != null and !end_date.equals('')">
+            <![CDATA[
+            AND user_datesub >= to_date(#{start_date}) AND user_datesub < to_date(#{end_date}) + 1
+            ]]>
+        </if>
+    </sql>
+
+    <select id="user_list" resultType="UserVO" parameterType="map">
+
+        SELECT
+            user_id, user_password, user_name, user_zipcode, user_addr, user_deaddr, user_phone, user_email, user_receive, user_point,  user_lastlogin, user_datesub, user_updatedate, sns_login_type
+        FROM
+            (
+                SELECT
+                    /*+ INDEX_DESC(user_tbl pk_join_id) */
+                        ROWNUM as rn, user_id, user_password, user_name, user_zipcode, user_addr, user_deaddr, user_phone, user_email, user_receive, user_point,  user_lastlogin, user_datesub, user_updatedate, sns_login_type
+                FROM
+                    user_tbl
+                WHERE
+                    1 = 1
+                        <![CDATA[
+                        AND ROWNUM <= (#{cri.pageNum} * #{cri.amount})
+                        ]]>
+                    <include refid="criteria" />
+                    <include refid="period" />
+
+            )
+        WHERE
+            rn > (#{cri.pageNum} -1 ) * #{cri.amount}
+    </select>
+
+    <select id="getTotalCount" resultType="int" parameterType="map">
+        SELECT
+            count(*)
+        FROM
+            user_tbl
+        WHERE
+            1 = 1
+            <include refid="criteria" />
+            <include refid="period" />
+    </select>
+
+    <delete id="user_delete" parameterType="String">
+        DELETE FROM
+            user_tbl
+        WHERE
+            user_id = #{user_id}
+    </delete>
+
+
+    <resultMap id="mailingMap" type="mailmngVO">
+
+        <id property="idx" column="m_idx" />
+        <result property="title" column="m_title" />
+        <result property="content" column="m_content" />
+        <result property="gubun" column="m_gubun" />
+        <result property="sendcount" column="m_send_count" />
+        <result property="regDate" column="reg_date" />
+
+    </resultMap>
+
+    <sql id="mail_search_title">
+        <if test="title != null and !title.equals('')">
+            AND m_title LIKE '%' || #{title} || '%'
+        </if>
+    </sql>
+
+    <select id="mailingInfoList" resultMap="mailingMap" parameterType="map">
+        SELECT
+            m_idx, m_title, m_content, m_gubun, m_send_count, reg_date
+        FROM (
+            SELECT /*INDEX_DESC(mailmng_tbl pk_mailmng_idx)*/
+                ROWNUM AS RN, m_idx, m_title, m_content, m_gubun, m_send_count, reg_date
+            FROM
+                mailmng_tbl
+            WHERE
+                1 = 1
+                <![CDATA[ AND ROWNUM <= (#{cri.pageNum} * #{cri.amount})]]>
+                <include refid="mail_search_title" />
+            )
+        WHERE
+            RN > (#{cri.pageNum} -1) * #{cri.amount}
+    </select>
+
+    <select id="MailListCount" resultType="int" parameterType="String">
+        SELECT
+            count(*)
+        FROM
+            mailmng_tbl
+        WHERE
+            1 = 1
+            <include refid="mail_search_title" />
+    </select>
+
+    <insert id="mailing_save" parameterType="MailmngVO">
+        <selectKey keyProperty="idx" resultType="Integer" order="BEFORE">
+            SELECT
+                seq_mailmng_tbl.NEXTVAL
+            FROM
+                dual
+        </selectKey>
+            INSERT INTO
+                mailmng_tbl(m_idx, m_title, m_content, m_gubun)
+            VALUES
+                (#{idx}, #{title}, #{content}, #{gubun})
+    </insert>
+
+    <select id="getAllMailAddress" resultType="String">
+        SELECT
+            user_email
+        FROM
+            user_tbl
+    </select>
+
+    <update id="mailSendCountUpdate" parameterType="int">
+        UPDATE
+            mailmng_tbl
+        SET
+            m_send_count = m_send_count + 1
+        WHERE
+            m_idx = #{idx}
+    </update>
+
+    <select id="MailSendInfo" resultMap="mailingMap" parameterType="int">
+        SELECT
+            m_idx, m_title, m_content, m_gubun, m_send_count, reg_date
+        FROM
+            mailmng_tbl
+        WHERE
+            m_idx = #{m_idx}
+    </select>
+
+    <update id="mailingedit" parameterType="mailmngVO">
+        UPDATE
+            mailmng_tbl
+        SET
+            m_title = #{title}, m_content = #{content}, m_gubun = #{gubun}, reg_date = sysdate
+        WHERE
+            m_idx = #{idx}
+    </update>
+
+</mapper>

@@ -11,9 +11,9 @@ import java.util.List;
 
 public interface MyshopMapper {
 
-    List<OrderDetailinfoVO> order_list(@Param("cri") Criteria cri, @Param("start_date") String start_date, @Param("end_date") String end_date);
+    List<OrderDetailinfoVO> order_list(@Param("cri") Criteria cri, @Param("user_id") String user_id, @Param("start_date") String start_date, @Param("end_date") String end_date);
 
-    int getTotalCount(@Param("cri") Criteria cri, @Param("start_date") String start_date, @Param("end_date") String end_date);
+    int getTotalCount(@Param("cri") Criteria cri, @Param("user_id") String user_id, @Param("start_date") String start_date, @Param("end_date") String end_date);
 
 
 }

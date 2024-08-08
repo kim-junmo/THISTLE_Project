@@ -35,6 +35,9 @@
                         <!-- 로그인을 하면 로그아웃 창이 나타난다.-->
                         <th:block th:if="${session.login_status != null}">
                             <a th:href="@{/user/logout}" class="small mr-3 text-black">Logout</a>
+                            <a th:href="@{/user/mypage}" class="small mr-3 text-black">MyPage</a>
+                            <a th:href="@{/cart/cart_list}" class="small mr-3 text-black">장바구니</a>
+                            <a th:href="@{/myshop/order_list}" class="small mr-3 text-black">주문정보</a>
                         </th:block>
 
                         <th:block th:if="${session.kakao_status != null}">
@@ -44,10 +47,6 @@
                         <th:block th:if="${session.naver_status != null}">
                             <a th:href="@{/oauth2/naverlogout}" class="small mr-3 text-black">Logout</a>
                         </th:block>
-
-                        <a th:href="@{/user/mypage}" class="small mr-3 text-black">MyPage</a>
-                        <a th:href="@{/cart/cart_list}" class="small mr-3 text-black">장바구니</a>
-                        <a th:href="@{/myshop/order_list}" class="small mr-3 text-black">주문정보</a>
                     </div>
                 </div>
             </div>

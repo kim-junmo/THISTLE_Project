@@ -15,6 +15,12 @@ public class Constants {
     //관리자 주문 리스트 출력개수
     public static final int ADMIN_ORDER_LIST_AMOUNT= 2;
 
+    //관리자 회원 리스트 출력개수
+    public static final int ADMIN_USER_LIST_AMOUNT= 1;
+
+    //관리자 메일 리스트 출력 개수
+    public static final int ADMIN_MAILING_LIST_AMOUNT= 10;
+
     //메일 이미지 첨부 시 도메인 주소
     public static final String ROOT_URL = "http://localhost:9090";
 }

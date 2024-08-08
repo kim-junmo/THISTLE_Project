@@ -8,7 +8,7 @@ import java.util.Date;
 
 //성능 관점으로 회원테이블(로그인 포함)/ 회원테이블 + 로그인 분리하여 작업하는 경우도 있다.
 //총 컬럼 수 13개
-//user_id, user_password, user_name, user_zipcode, user_addr, user_deaddr, user_phone, user_email, user_receive, user_point,  user_lastlogin, user_datesub,user_updatedate
+//user_id, user_password, user_name, user_zipcode, user_addr, user_deaddr, user_phone, user_email, user_receive, user_point,  user_lastlogin, user_datesub, user_updatedate, sns_login_type
 @Getter
 @Setter
 @ToString
@@ -27,5 +27,6 @@ public class UserVO {
     private Date user_lastlogin;
     private Date user_datesub;
     private Date user_updatedate;
+    private String sns_login_type;
 
 }

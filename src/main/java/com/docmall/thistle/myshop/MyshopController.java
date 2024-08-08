@@ -43,14 +43,14 @@ public class MyshopController {
         //user_id 주입
         String user_id = ((UserVO) session.getAttribute("login_status")).getUser_id();
 
-        List<OrderDetailinfoVO> ord_list = myshopService.order_list(cri, start_date, end_date);
+        List<OrderDetailinfoVO> ord_list = myshopService.order_list(cri, user_id, start_date, end_date);
         List<String> displayedDates = new ArrayList<>();
 
         ord_list.forEach(vo -> {
             vo.setPro_up_folder(vo.getPro_up_folder().replace("\\", "/"));
         });
 
-        int totalCount = myshopService.getTotalCount(cri, start_date, end_date);
+        int totalCount = myshopService.getTotalCount(cri, user_id, start_date, end_date);
 
         model.addAttribute("ord_list", ord_list);
         model.addAttribute("pageMaker", new PageDTO(cri, totalCount));

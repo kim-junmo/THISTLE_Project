@@ -22,7 +22,7 @@
 
     <select id="login" resultType="UserVO" parameterType="String">
         select
-            user_id, user_password, user_name, user_zipcode, user_addr, user_deaddr, user_phone, user_email, user_receive, user_point,  user_lastlogin, user_datesub,user_updatedate
+            user_id, user_password, user_name, user_zipcode, user_addr, user_deaddr, user_phone, user_email, user_receive, user_point,  user_lastlogin, user_datesub, user_updatedate
         from
             user_tbl
         where

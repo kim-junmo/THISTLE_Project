@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<!--
+This is a starter template page. Use this page to start your new project from
+scratch. This page gets rid of all links and provides the needed markup only.
+-->
+<html lang="ko" xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{admin/layout/adminLayout}">
+<head>
+
+</head>
+
+<body class="hold-transition skin-blue sidebar-mini">
+<div class="wrapper">
+
+    <!-- Main Header -->
+
+    <!-- Left side column. contains the logo and sidebar -->
+
+    <th:block layout:fragment = "content">
+        <!-- Content Wrapper. Contains page content -->
+        <div class="content-wrapper">
+            <!-- Content Header (Page header) -->
+            <section class="content-header">
+                <h1>회원 목록<small>이메일 발송</small></h1>
+                <ol class="breadcrumb">
+                    <li><a href="#"><i class="fa fa-dashboard"></i> Level</a></li>
+                    <li class="active">Here</li>
+                </ol>
+            </section>
+
+            <!-- Main content -->
+            <section class="content">
+
+                <!-- Your Page Content Here -->
+                <div class="row">
+                    <div class="col-md-12">
+                        <div class="box">
+                            <div class="box-header with-border">
+                                <h3 class="box-title">이메일 발송목록</h3>
+                                <button type="button" class="btn btn-primary btn-sm" name="btn_mail_register">메일링 등록</button>
+                            </div>
+                            <!-- list start -->
+                            <div class="box-body">
+                                <div>
+                                    <form action="/admin/user/mailinglist" method="get" class="form-horizontal">
+                                        <div class="box-body">
+                                            <div class="form-group row">
+                                                <label for="title" class="col-sm-1 col-form-label">메일링 제목</label>
+                                                <div class="col-sm-11">
+                                                    <input type="text" class="form-control" name="title" id="title" placeholder="메일링 제목...">
+                                                </div>
+                                            </div>
+                                        </div><!-- /.box-body -->
+                                        <div class="box-footer text-right">
+                                            <button type="submit" id="btn_mail_search" class="btn btn-primary">검색</button>
+                                        </div><!-- /.box-footer -->
+                                    </form>
+                                </div>
+                                <table class="table table-bordered">
+                                    <tbody>
+                                        <tr>
+                                            <th style="width: 10%">번호</th>
+                                            <th style="width: 25%">메일링제목</th>
+                                            <th style="width: 20%">등록일</th>
+                                            <th style="width: 15%">발송횟수</th>
+                                            <th style="width: 15%">관리</th>
+                                            <th style="width: 10%">발송</th>
+                                        </tr>
+
+                                        <tr th:each="mail : ${maillist}">
+                                            <td><span th:text="${mail.idx}"></span></td>
+                                            <td>[[${mail.title}]]</td>
+                                            <td th:text="${#dates.format(mail.regDate, 'yyyy-MM-dd HH:mm') }"></td>
+                                            <td th:text="${mail.sendcount}"></td>
+                                            <td>
+                                                <button type="button" class="btn btn-primary btn-sm" name="btn_mail_edit"  style="background: #97a0b3" th:data-idx="${mail.idx}">수정</button>
+                                                <button type="button" class="btn btn-danger btn-sm" name="btn_mail_del" th:data-idx="${mail.idx}">삭제</button>
+                                            </td>
+                                            <td>
+                                                <button type="button" class="btn btn-primary btn-sm" name="btn_mail_send" style="background: #97a0b3" th:data-idx="${mail.idx}">메일 보내기</button>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                            <div class="box-footer clearfix">
+                                <div class="row">
+                                    <div class="col-md-4">
+                                        <!--1)페이지번호 클릭할 때 사용  [이전]  1	2	3	4	5 [다음]  -->
+                                        <!--2)목록에서 상품이미지 또는 상품명 클릭할 때 사용   -->
+                                        <form id="actionForm" action="" method="get">
+                                            <input type="hidden" name="pageNum" id="pageNum" th:value="${pageMaker.cri.pageNum}" />
+                                            <input type="hidden" name="amount"  id="amount" th:value="${pageMaker.cri.amount}" />
+                                            <input type="hidden" name="type" id="type" th:value="${pageMaker.cri.type}" />
+                                            <input type="hidden" name="keyword" id="keyword" th:value="${pageMaker.cri.keyword}" />
+                                        </form>
+                                    </div>
+                                    <div class="col-md-6 text-center">
+                                        <nav aria-label="...">
+                                            <ul class="pagination">
+                                                <!-- 이전 표시여부 -->
+
+                                                <th:block th:if="${pageMaker.prev }">
+                                                    <li class="page-item">
+                                                        <a th:href="${pageMaker.startPage - 1 }" class="page-link movepage">이전</a>
+                                                    </li>
+                                                </th:block>
+
+                                                <!-- https://jbground.tistory.com/40 페이지번호 출력 -->
+                                                <!-- 1	2	3	4	5 6	7	8	9	10  [다음] -->
+                                                <!-- [이전] 11	12	13	14	15 16	17	18	19	20   -->
+
+                                                <th:block th:with="pageMaker = ${pageMaker}">
+                                                    <th:block th:each="num : *{#numbers.sequence(pageMaker.startPage, pageMaker.endPage)}">
+                                                        <li class='page-item' th:classappend="${pageMaker.cri.pageNum ==  num ? 'active': '' }" aria-current="page">
+                                                            <a class="page-link movepage" th:href="${num }" th:text="${num }"></a>
+                                                        </li>
+                                                    </th:block>
+                                                </th:block>
+
+                                                <!--  다음 표시여부 -->
+                                                <th:block th:if="${pageMaker.next }">
+                                                    <li class="page-item">
+                                                        <a th:href="${pageMaker.endPage + 1 }" class="page-link movepage">다음</a>
+                                                    </li>
+                                                </th:block>
+
+                                            </ul>
+                                        </nav>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+
+
+
+            </section><!-- /.content -->
+        </div><!-- /.content-wrapper -->
+    </th:block>
+</div>
+<!-- Main Footer -->
+
+
+
+
+
+<!-- REQUIRED JS SCRIPTS -->
+<th:block layout:fragment="script">
+    <script th:inline="javascript">
+        let msg = [[${msg}]]; //null
+        if(msg == 'save') {
+            alert("메일정보가 저장되었습니다.")
+        }
+    </script>
+    <script>
+        $(document).ready(function() {
+
+            let actionForm = $("#actionForm");
+
+            // 페이지번호 클릭시, 이전 혹은 1, 2, 3, 4, 5 ~~ 클릭 시 동작, actionForm을 사용한다
+            $(".movepage").on("click", function(e) {
+                e.preventDefault(); //a태그의 href 기능을 제거
+                //주소 변경
+                actionForm.attr("action", "/admin/user/mailinglist");
+                //클릭한 페이지번호 작업
+                actionForm.find("input[name='pageNum']").val($(this).attr("href"));
+
+                actionForm.submit();
+            });
+
+            //메일보내기 name='btn_mail_send' actionform을 이용한 시작했던 목록의 페이지 이동작업
+            $("button[name='btn_mail_send']").on("click", function() {
+                let idx = $(this).data("idx");
+
+                location.href = "/admin/user/mailingsendform?idx=" + idx;
+            });
+
+            //메일수정하기 name="btn_mail_edit" actionform을 이용한 시작했던 목록의 페이지 이동작업
+            $("button[name='btn_mail_edit']").on("click", function() {
+                let idx = $(this).data("idx");
+
+                location.href = "/admin/user/mailingsendform?idx=" + idx;
+            });
+
+            //메일 등록 id="btn_mail_register"
+            $("button[name='btn_mail_register']").on("click", function() {
+
+                location.href = "/admin/user/mailingform";
+            });
+
+
+        }); // ready event end
+
+    </script>
+</th:block>
+</body>
+</html>
