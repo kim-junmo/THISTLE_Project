@@ -1,5 +1,7 @@
 package com.docmall.thistle.order;
 
+import java.io.Serializable;
+
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
@@ -9,7 +11,11 @@ import java.util.Date;
 @Getter
 @Setter
 @ToString
-public class OrderVO {
+public class OrderVO implements Serializable {
+
+    // 세션을 Redis에 저장하려면 세션에 담는 객체가 직렬화 가능해야 한다
+    private static final long serialVersionUID = 1L;
+
 
 //    테이블명 : order_tbl
 //    시퀀스 명 : seq_ord_code

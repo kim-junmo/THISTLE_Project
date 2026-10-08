@@ -20,3 +20,24 @@
   1) 페이지 구현 完
   2) 이메일 전송 기능 구현 完
   3) 기능 구현 完
+## Redis 세션 설정
+로그인 세션을 톰캣 메모리 대신 **Redis**에 저장합니다. (Spring Session + Redis)
+- 서버를 재시작해도 로그인이 유지되고, 서버를 여러 대로 늘려도 세션이 공유됩니다.
+- 브라우저에는 세션 ID만 `THISTLE_SESSION` 쿠키(HttpOnly, SameSite=Lax)로 저장됩니다.
+- 세션 만료: 30분 (`RedisSessionConfig`)
+
+### 실행 방법
+1. Redis 실행: `docker compose up -d` (Docker가 없다면 Redis를 직접 설치해 6379 포트로 실행)
+2. 애플리케이션 실행
+3. Redis 접속 정보가 기본값(localhost:6379)과 다르면 `application.properties`에 추가
+   ```properties
+   spring.data.redis.host=localhost
+   spring.data.redis.port=6379
+   # spring.data.redis.password=비밀번호
+   ```
+
+### 저장된 세션 확인
+```bash
+docker exec -it thistle-redis redis-cli
+keys thistle:session:*
+```

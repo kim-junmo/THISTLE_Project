@@ -1,5 +1,7 @@
 package com.docmall.thistle.user;
 
+import java.io.Serializable;
+
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
@@ -12,7 +14,11 @@ import java.util.Date;
 @Getter
 @Setter
 @ToString
-public class UserVO {
+public class UserVO implements Serializable {
+
+    // 세션을 Redis에 저장하려면 세션에 담는 객체가 직렬화 가능해야 한다
+    private static final long serialVersionUID = 1L;
+
 
     private String user_id;
     private String user_password;
