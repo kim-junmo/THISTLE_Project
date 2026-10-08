@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.docmall.thistle.admin.stats.StatsMapper">
+
+    <!-- 취소된 주문은 매출에서 제외 -->
+    <sql id="exclude_cancel">
+        AND NOT EXISTS (
+            SELECT 1 FROM payinfo_tbl pi
+            WHERE pi.ord_code = o.ord_code AND pi.p_status = #{cancel_status}
+        )
+    </sql>
+
+    <select id="getMonthlySales" resultType="com.docmall.thistle.admin.stats.MonthlySalesVO">
+        SELECT
+            TO_NUMBER(TO_CHAR(o.ord_regdate, 'MM')) AS month,
+            COUNT(*) AS order_count,
+            NVL(SUM(o.ord_price), 0) AS sales
+        FROM
+            order_tbl o
+        WHERE
+            o.ord_regdate >= TO_DATE(#{year} || '-01-01', 'YYYY-MM-DD')
+            <![CDATA[ AND o.ord_regdate < ADD_MONTHS(TO_DATE(#{year} || '-01-01', 'YYYY-MM-DD'), 12) ]]>
+            <include refid="exclude_cancel" />
+        GROUP BY
+            TO_CHAR(o.ord_regdate, 'MM')
+        ORDER BY
+            month
+    </select>
+
+    <!--
+        상품은 보통 2차 카테고리에 등록되어 있으므로, 2차 카테고리의 부모(1차)로 묶어서 합산한다.
+        1차 카테고리에 바로 등록된 상품은 NVL로 자기 자신을 1차로 본다.
+    -->
+    <select id="getCategorySales" resultType="com.docmall.thistle.admin.stats.CategorySalesVO">
+        SELECT
+            pc.cate_code,
+            pc.cate_name,
+            NVL(SUM(od.dt_amount), 0) AS quantity,
+            NVL(SUM(od.dt_amount * od.dt_price), 0) AS sales
+        FROM
+            ordetail_tbl od
+        INNER JOIN order_tbl o   ON od.ord_code = o.ord_code
+        INNER JOIN product_tbl p ON od.pro_num = p.pro_num
+        INNER JOIN cate_tbl c    ON p.cate_code = c.cate_code
+        INNER JOIN cate_tbl pc   ON pc.cate_code = NVL(c.cate_prtcode, c.cate_code)
+        WHERE
+            1 = 1
+            <if test="start_date != null and start_date != ''">
+                AND o.ord_regdate >= TO_DATE(#{start_date}, 'YYYY-MM-DD')
+            </if>
+            <if test="end_date != null and end_date != ''">
+                <![CDATA[ AND o.ord_regdate < TO_DATE(#{end_date}, 'YYYY-MM-DD') + 1 ]]>
+            </if>
+            <include refid="exclude_cancel" />
+        GROUP BY
+            pc.cate_code, pc.cate_name
+        ORDER BY
+            sales DESC
+    </select>
+
+    <select id="getFirstOrderYear" resultType="Integer">
+        SELECT TO_NUMBER(TO_CHAR(MIN(ord_regdate), 'YYYY')) FROM order_tbl
+    </select>
+
+</mapper>

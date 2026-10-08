@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{admin/layout/adminlayout}">
+
+<th:block layout:fragment="content">
+    <div class="content-wrapper">
+        <section class="content-header">
+            <h1>카테고리별 매출현황 <small>1차 카테고리 기준 · 취소된 주문 제외</small></h1>
+        </section>
+
+        <section class="content">
+
+            <div class="box box-primary">
+                <div class="box-header with-border">
+                    <form action="/admin/staticAnalysis/orderstats" method="get" class="form-inline">
+                        <label>기간</label>
+                        <input type="date" name="start_date" class="form-control input-sm" th:value="${start_date}">
+                        ~
+                        <input type="date" name="end_date" class="form-control input-sm" th:value="${end_date}">
+                        <button type="submit" class="btn btn-primary btn-sm">조회</button>
+                    </form>
+                </div>
+
+                <div class="box-body">
+                    <div class="row" th:if="${!#lists.isEmpty(category_list)}">
+                        <div class="col-md-5">
+                            <div style="position: relative; height: 300px;">
+                                <canvas id="categoryChart"></canvas>
+                            </div>
+                        </div>
+                        <div class="col-md-7">
+                            <table class="table table-condensed">
+                                <tr>
+                                    <th>카테고리</th>
+                                    <th class="text-right">판매 수량</th>
+                                    <th class="text-right">매출</th>
+                                    <th class="text-right" style="width: 80px">비중</th>
+                                </tr>
+                                <tr th:each="c : ${category_list}">
+                                    <td th:text="${c.cate_name}"></td>
+                                    <td class="text-right" th:text="${c.quantity}"></td>
+                                    <td class="text-right" th:text="${#numbers.formatInteger(c.sales, 1, 'COMMA') + '원'}"></td>
+                                    <td class="text-right" th:text="${total_sales == 0 ? '-' : #numbers.formatDecimal(c.sales * 100.0 / total_sales, 1, 1) + '%'}"></td>
+                                </tr>
+                                <tr class="active">
+                                    <th>합계</th>
+                                    <th class="text-right" th:text="${total_quantity}"></th>
+                                    <th class="text-right" th:text="${#numbers.formatInteger(total_sales, 1, 'COMMA') + '원'}"></th>
+                                    <th class="text-right">100%</th>
+                                </tr>
+                            </table>
+                        </div>
+                    </div>
+
+                    <p class="text-center text-muted" th:if="${#lists.isEmpty(category_list)}" style="padding: 40px 0;">
+                        선택한 기간에 판매된 상품이 없습니다.
+                    </p>
+                </div>
+            </div>
+
+        </section>
+    </div>
+</th:block>
+
+<th:block layout:fragment="script">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+    <script th:inline="javascript">
+        $(document).ready(function() {
+            const categories = /*[[${category_list}]]*/ [];
+            const canvas = document.getElementById("categoryChart");
+            if (!canvas || categories.length === 0) return;
+
+            const colors = ["#3c8dbc", "#00a65a", "#f39c12", "#dd4b39", "#605ca8", "#00c0ef", "#d81b60", "#39cccc", "#ff851b", "#001f3f"];
+
+            new Chart(canvas, {
+                type: "doughnut",
+                data: {
+                    labels: categories.map(c => c.cate_name),
+                    datasets: [{
+                        data: categories.map(c => c.sales),
+                        backgroundColor: categories.map((c, i) => colors[i % colors.length])
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { position: "bottom" },
+                        tooltip: {
+                            callbacks: {
+                                label: ctx => " " + ctx.label + " " + ctx.parsed.toLocaleString() + "원"
+                            }
+                        }
+                    }
+                }
+            });
+        });
+    </script>
+</th:block>
+</html>

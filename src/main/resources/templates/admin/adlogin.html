@@ -21,15 +21,16 @@
 					<fieldset class="clearfix">
 					<p>
 						<span class="fa fa-user"></span>
-						<input type="text"  name="admin_id" value="admin" Placeholder="Username" required>
+						<input type="text" name="admin_id" id="admin_id" Placeholder="Username" required>
 					</p> <!-- JS because of IE support; better: placeholder="Username" -->
 					<p>
 						<span class="fa fa-lock"></span>
-						<input type="password" name="admin_pw" value="1234" Placeholder="Password" required>
+						<input type="password" name="admin_pw" id="admin_pw" Placeholder="Password" required>
 					</p> <!-- JS because of IE support; better: placeholder="Password" -->
 					<div>
 						<span style="width:48%; text-align:left;  display: inline-block;">
-							<a class="small-text" href="#">Forgot password?</a>
+							<!-- 등록된 관리자가 한 명도 없을 때만 최초 관리자 등록 링크를 보여준다 -->
+							<a class="small-text" href="/admin/join" th:if="${first_admin}">최초 관리자 등록</a>
 						</span>
 						<span style="width:50%; text-align:right;  display: inline-block;">
 							<input type="submit" value="Sign In">
@@ -50,7 +51,7 @@
 
 <th:block layout:fragment="script">
 	<script th:inline="javascript">
-		let msg = [[${mag}]];
+		let msg = [[${msg}]];
 		if(msg == "failID") {
 			alert("아이디를 정확히 입력하세요");
 			document.getElementById("admin_id").focus();

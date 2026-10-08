@@ -1,13 +1,18 @@
 package com.docmall.thistle.payinfo;
 
+import lombok.AllArgsConstructor;
 import lombok.Builder;
+import lombok.NoArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
 
 import java.util.Date;
 
+// MyBatis가 조회 결과를 담으려면 기본 생성자가 필요하다. @Builder만 있으면 기본 생성자가 없어진다.
 @Builder
+@NoArgsConstructor
+@AllArgsConstructor
 @Getter
 @Setter
 @ToString

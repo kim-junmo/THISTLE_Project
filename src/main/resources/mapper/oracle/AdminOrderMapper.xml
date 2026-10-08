@@ -32,7 +32,8 @@
 
     <select id="order_list" resultType="OrderVO">
         SELECT
-        ord_code, user_id, ord_name, ord_addr_zipcode, ord_addr_basic, ord_addr_detail, ord_tel, ord_price, ord_desc, ord_regdate
+        ord_code, user_id, ord_name, ord_addr_zipcode, ord_addr_basic, ord_addr_detail, ord_tel, ord_price, ord_desc, ord_regdate,
+        (SELECT p.p_status FROM payinfo_tbl p WHERE p.ord_code = t.ord_code AND ROWNUM = 1) AS p_status
         FROM (
             SELECT /*+ INDEX_DESC(order_tbl pk_ord_code)  */
             ROWNUM AS RN, ord_code, user_id, ord_name, ord_addr_zipcode, ord_addr_basic, ord_addr_detail, ord_tel, ord_price, ord_desc, ord_regdate
@@ -46,7 +47,7 @@
             <![CDATA[
                         ROWNUM <= (#{cri.pageNum} * #{cri.amount})
                     ]]>  --페이지번호 * 페이지별 출력건수
-            )
+            ) t
         WHERE
         RN > (#{cri.pageNum} - 1 ) * #{cri.amount}
     </select>
@@ -108,7 +109,7 @@
 
     <select id="order_info" resultType="OrderVO" parameterType="Long">
         SELECT
-            ord_code, user_id, ord_name, ord_addr_zipcode, ord_addr_basic, ord_addr_detail, ord_tel, ord_price, ord_desc, ord_regdate
+            ord_code, user_id, ord_name, ord_addr_zipcode, ord_addr_basic, ord_addr_detail, ord_tel, ord_price, ord_desc, ord_regdate, ord_admin_memo
         FROM
             order_tbl
         WHERE

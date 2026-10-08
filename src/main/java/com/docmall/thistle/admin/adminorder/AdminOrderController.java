@@ -53,6 +53,7 @@ public class AdminOrderController {
 
         model.addAttribute("order_list", order_list);
         model.addAttribute("pageMaker", new PageDTO(cri, totalCount));
+        model.addAttribute("status_list", Constants.ORDER_STATUS_LIST); // 상세보기의 상태 선택 목록
     }
 
     //주문목록 2. mybatis의 resulttype을 hashmap으로 사용하는 예제.
@@ -123,6 +124,16 @@ public class AdminOrderController {
 
         entity = new ResponseEntity<String>("success", HttpStatus.OK);
         return entity;
+    }
+
+    // 주문 진행 상태 변경 (결제완료, 배송중 등)
+    @PostMapping("/order_status_change")
+    public ResponseEntity<String> order_status_changeOK(Long ord_code, String p_status) throws Exception {
+
+        if (adminOrderService.order_status_change(ord_code, p_status)) {
+            return new ResponseEntity<String>("success", HttpStatus.OK);
+        }
+        return new ResponseEntity<String>("fail", HttpStatus.BAD_REQUEST);
     }
 
     //삭제

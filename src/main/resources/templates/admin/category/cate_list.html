@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{admin/layout/adminlayout}">
+
+<th:block layout:fragment="content">
+    <div class="content-wrapper">
+        <section class="content-header">
+            <h1>카테고리 관리 <small>1차 · 2차 카테고리</small></h1>
+        </section>
+
+        <section class="content">
+            <div class="row">
+
+                <!-- 카테고리 추가 -->
+                <div class="col-md-4">
+                    <div class="box box-primary">
+                        <div class="box-header with-border">
+                            <h3 class="box-title">카테고리 추가</h3>
+                        </div>
+                        <form action="/admin/category/cate_insert" method="post" id="insertForm">
+                            <div class="box-body">
+                                <div class="form-group">
+                                    <label for="cate_prtcode">상위 카테고리</label>
+                                    <select class="form-control" id="cate_prtcode" name="cate_prtcode">
+                                        <option value="">(없음) 1차 카테고리로 추가</option>
+                                        <option th:each="p : ${cate_tree}" th:value="${p.cate_code}" th:text="${p.cate_name}"></option>
+                                    </select>
+                                    <p class="help-block">상위 카테고리를 고르면 그 아래 2차 카테고리로 추가됩니다.</p>
+                                </div>
+                                <div class="form-group">
+                                    <label for="new_cate_name">카테고리 이름</label>
+                                    <input type="text" class="form-control" id="new_cate_name" name="cate_name" maxlength="50" required>
+                                </div>
+                            </div>
+                            <div class="box-footer">
+                                <button type="submit" class="btn btn-primary">추가</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+
+                <!-- 카테고리 목록 -->
+                <div class="col-md-8">
+                    <div class="box box-info">
+                        <div class="box-header with-border">
+                            <h3 class="box-title">카테고리 목록</h3>
+                            <div class="box-tools">
+                                <small class="text-muted">하위 카테고리나 상품이 있는 카테고리는 삭제할 수 없습니다.</small>
+                            </div>
+                        </div>
+                        <div class="box-body no-padding">
+                            <table class="table table-condensed">
+                                <tr>
+                                    <th style="width: 70px">코드</th>
+                                    <th>이름</th>
+                                    <th style="width: 70px">상품 수</th>
+                                    <th style="width: 70px">삭제</th>
+                                </tr>
+
+                                <th:block th:each="p : ${cate_tree}">
+                                    <!-- 1차 카테고리 -->
+                                    <tr class="active">
+                                        <td><strong th:text="${p.cate_code}"></strong></td>
+                                        <td>
+                                            <form action="/admin/category/cate_update" method="post" class="form-inline">
+                                                <input type="hidden" name="cate_code" th:value="${p.cate_code}">
+                                                <input type="text" class="form-control input-sm" name="cate_name" th:value="${p.cate_name}" maxlength="50" required style="width: 60%;">
+                                                <button type="submit" class="btn btn-default btn-sm">이름 수정</button>
+                                                <small class="text-muted">하위 [[${#lists.size(p.children)}]]개</small>
+                                            </form>
+                                        </td>
+                                        <td th:text="${p.pro_count}"></td>
+                                        <td>
+                                            <form action="/admin/category/cate_delete" method="post" class="form_delete">
+                                                <input type="hidden" name="cate_code" th:value="${p.cate_code}">
+                                                <button type="submit" class="btn btn-danger btn-sm"
+                                                        th:disabled="${!#lists.isEmpty(p.children) or p.pro_count > 0}">삭제</button>
+                                            </form>
+                                        </td>
+                                    </tr>
+
+                                    <!-- 2차 카테고리 -->
+                                    <tr th:each="c : ${p.children}">
+                                        <td th:text="${c.cate_code}"></td>
+                                        <td>
+                                            <form action="/admin/category/cate_update" method="post" class="form-inline" style="padding-left: 24px;">
+                                                <i class="fa fa-level-up fa-rotate-90 text-muted"></i>
+                                                <input type="hidden" name="cate_code" th:value="${c.cate_code}">
+                                                <input type="text" class="form-control input-sm" name="cate_name" th:value="${c.cate_name}" maxlength="50" required style="width: 55%;">
+                                                <button type="submit" class="btn btn-default btn-sm">이름 수정</button>
+                                            </form>
+                                        </td>
+                                        <td th:text="${c.pro_count}"></td>
+                                        <td>
+                                            <form action="/admin/category/cate_delete" method="post" class="form_delete">
+                                                <input type="hidden" name="cate_code" th:value="${c.cate_code}">
+                                                <button type="submit" class="btn btn-danger btn-sm" th:disabled="${c.pro_count > 0}">삭제</button>
+                                            </form>
+                                        </td>
+                                    </tr>
+                                </th:block>
+
+                                <tr th:if="${#lists.isEmpty(cate_tree)}">
+                                    <td colspan="4" class="text-center text-muted">등록된 카테고리가 없습니다.</td>
+                                </tr>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </section>
+    </div>
+</th:block>
+
+<th:block layout:fragment="script">
+    <script th:inline="javascript">
+        $(document).ready(function() {
+
+            let messages = {
+                insertSuccess: "카테고리가 추가되었습니다.",
+                updateSuccess: "카테고리 이름이 수정되었습니다.",
+                deleteSuccess: "카테고리가 삭제되었습니다.",
+                emptyName: "카테고리 이름을 입력하세요.",
+                duplicateName: "같은 위치에 같은 이름의 카테고리가 이미 있습니다.",
+                hasChildren: "하위 카테고리가 있어 삭제할 수 없습니다. 하위 카테고리를 먼저 삭제하세요.",
+                hasProducts: "이 카테고리에 등록된 상품이 있어 삭제할 수 없습니다. 상품의 카테고리를 먼저 바꾸세요."
+            };
+            let msg = [[${msg}]];
+            if (msg && messages[msg]) {
+                alert(messages[msg]);
+            }
+
+            $("form.form_delete").on("submit", function(e) {
+                if (!confirm("카테고리를 삭제하시겠습니까?")) {
+                    e.preventDefault();
+                }
+            });
+        });
+    </script>
+</th:block>
+</html>

@@ -31,4 +31,13 @@
             ord_code = #{ord_code}
     </update>
 
+    <update id="p_status_change">
+        UPDATE
+            payinfo_tbl
+        SET
+            p_status = #{p_status}
+        WHERE
+            ord_code = #{ord_code}
+    </update>
+
 </mapper>

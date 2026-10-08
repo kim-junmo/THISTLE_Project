@@ -9,7 +9,7 @@
         <img src="/dist/img/user2-160x160.jpg" class="img-circle" alt="User Image">
       </div>
       <div class="pull-left info">
-        <p>Alexander Pierce</p>
+        <p th:text="${session.admin_state != null ? session.admin_state.admin_id : '관리자'}">관리자</p>
         <!-- Status -->
         <a href="#"><i class="fa fa-circle text-success"></i> Online</a>
       </div>
@@ -35,12 +35,13 @@
         <ul class="treeview-menu">
           <li><a href="/admin/user/user_list">회원목록</a></li>
           <li><a href="/admin/user/mailinglist">메일발송 및 목록</a></li>
+          <li><a href="/admin/join">관리자 등록</a></li>
         </ul>
       </li>
       <li class="treeview">
         <a href="#"><i class="fa fa-align-justify"></i> <span>카테고리관리</span> <i class="fa fa-angle-left pull-right"></i></a>
         <ul class="treeview-menu">
-          <li><a href="#">카테고리 목록</a></li>
+          <li><a href="/admin/category/cate_list">카테고리 목록</a></li>
         </ul>
       </li>
       <li class="treeview">
@@ -59,7 +60,7 @@
       <li class="treeview">
         <a href="#"><i class="fa fa-bar-chart"></i> <span>통계분석</span> <i class="fa fa-angle-left pull-right"></i></a>
         <ul class="treeview-menu">
-          <li><a href="#">월별 매출현황</a></li>
+          <li><a href="/admin/staticAnalysis/monthly">월별 매출현황</a></li>
           <li><a href="/admin/staticAnalysis/orderstats">카테고리별 매출현황</a></li>
         </ul>
       </li>
@@ -67,7 +68,7 @@
         <a href="#"><i class="fa fa-television"></i> <span>게시판관리</span> <i class="fa fa-angle-left pull-right"></i></a>
         <ul class="treeview-menu">
           <li><a href="#">QNA관리</a></li>
-          <li><a href="#">리뷰관리</a></li>
+          <li><a href="/admin/review/review_list">리뷰관리</a></li>
         </ul>
       </li>
       <li class="treeview">

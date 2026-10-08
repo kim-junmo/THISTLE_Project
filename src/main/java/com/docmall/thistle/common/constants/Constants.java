@@ -23,4 +23,14 @@ public class Constants {
 
     //메일 이미지 첨부 시 도메인 주소
     public static final String ROOT_URL = "http://localhost:9090";
+
+    //관리자 리뷰 리스트 출력개수
+    public static final int ADMIN_REVIEW_LIST_AMOUNT = 10;
+
+    //주문 진행 상태(payinfo_tbl.p_status에 저장). 기존 값 '미납', '결제완료'를 그대로 포함한다.
+    public static final java.util.List<String> ORDER_STATUS_LIST =
+            java.util.List.of("미납", "결제완료", "배송준비중", "배송중", "배송완료", "주문취소");
+
+    //매출 통계에서 제외할 상태
+    public static final String ORDER_STATUS_CANCEL = "주문취소";
 }

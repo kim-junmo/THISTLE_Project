@@ -38,6 +38,9 @@ public class WebMvcConfig implements WebMvcConfigurer {
                         "/admin/",              // 관리자 로그인 화면
                         "/admin/admin_ok",      // 관리자 로그인 처리
                         "/admin/adlogin",
+                        // 관리자 등록: 최초 관리자 생성을 위해 열어두고, AdminController에서 권한을 직접 확인
+                        "/admin/join",
+                        "/admin/idcheck",
                         // ckeditor로 올린 이미지: 상품 상세설명과 발송된 메일 안에서 일반 사용자도 봐야 한다
                         "/admin/product/display/**",
                         "/admin/user/display/**"

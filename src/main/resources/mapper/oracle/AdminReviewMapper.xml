@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.docmall.thistle.admin.review.AdminReviewMapper">
+
+    <!-- 검색 조건: P 상품명, I 아이디, C 제목 또는 내용 -->
+    <sql id="criteria">
+        <trim prefix="AND (" suffix=")" prefixOverrides="OR">
+            <foreach collection="typeArr" item="type">
+                <trim prefix="OR">
+                    <choose>
+                        <when test="type == 'P'.toString()">
+                            p.pro_name LIKE '%' || #{keyword} || '%'
+                        </when>
+                        <when test="type == 'I'.toString()">
+                            r.user_id LIKE '%' || #{keyword} || '%'
+                        </when>
+                        <when test="type == 'C'.toString()">
+                            (r.re_title LIKE '%' || #{keyword} || '%' OR r.re_content LIKE '%' || #{keyword} || '%')
+                        </when>
+                    </choose>
+                </trim>
+            </foreach>
+        </trim>
+    </sql>
+
+    <!-- 최신 리뷰 순 페이징: 정렬한 결과에 ROWNUM을 붙여 자른다 -->
+    <select id="review_list" resultType="com.docmall.thistle.admin.review.AdminReviewVO" parameterType="com.docmall.thistle.common.dto.Criteria">
+        SELECT
+            re_code, user_id, pro_num, pro_name, re_title, re_content, re_rate, re_date
+        FROM (
+            SELECT
+                ROWNUM AS rn, x.*
+            FROM (
+                SELECT
+                    r.re_code, r.user_id, r.pro_num, p.pro_name, r.re_title, r.re_content, r.re_rate, r.re_date
+                FROM
+                    review_tbl r
+                LEFT OUTER JOIN
+                    product_tbl p
+                ON
+                    r.pro_num = p.pro_num
+                WHERE
+                    1 = 1
+                    <include refid="criteria" />
+                ORDER BY
+                    r.re_code DESC
+            ) x
+            <![CDATA[ WHERE ROWNUM <= (#{pageNum} * #{amount}) ]]>
+        )
+        WHERE
+            rn > (#{pageNum} - 1) * #{amount}
+    </select>
+
+    <select id="getTotalCount" resultType="int" parameterType="com.docmall.thistle.common.dto.Criteria">
+        SELECT
+            COUNT(*)
+        FROM
+            review_tbl r
+        LEFT OUTER JOIN
+            product_tbl p
+        ON
+            r.pro_num = p.pro_num
+        WHERE
+            1 = 1
+            <include refid="criteria" />
+    </select>
+
+    <delete id="review_delete" parameterType="Long">
+        DELETE FROM
+            review_tbl
+        WHERE
+            re_code = #{re_code}
+    </delete>
+
+</mapper>

@@ -27,5 +27,61 @@
             admin_id = #{admin_id}
     </select>
 
+    <select id="adminCount" resultType="int">
+        SELECT COUNT(*) FROM admin_tbl
+    </select>
+
+    <update id="updateVisitDate" parameterType="String">
+        UPDATE admin_tbl SET admin_visit_date = SYSDATE WHERE admin_id = #{admin_id}
+    </update>
+
+    <!-- 대시보드 요약: 각 숫자를 서브쿼리로 한 번에 조회 -->
+    <select id="getDashboardSummary" resultType="com.docmall.thistle.admin.DashboardVO">
+        SELECT
+            (SELECT COUNT(*) FROM order_tbl WHERE ord_regdate >= TRUNC(SYSDATE)) AS today_order_count,
+            (SELECT NVL(SUM(ord_price), 0) FROM order_tbl WHERE ord_regdate >= TRUNC(SYSDATE)) AS today_sales,
+            (SELECT NVL(SUM(ord_price), 0) FROM order_tbl WHERE ord_regdate >= TRUNC(SYSDATE, 'MM')) AS month_sales,
+            (SELECT COUNT(*) FROM user_tbl WHERE user_datesub >= TRUNC(SYSDATE)) AS today_user_count,
+            (SELECT COUNT(*) FROM payinfo_tbl WHERE p_status = '미납') AS unpaid_count,
+            (SELECT COUNT(*) FROM payinfo_tbl WHERE p_status IN ('결제완료', '배송준비중')) AS shipping_wait_count,
+            (SELECT COUNT(*) FROM product_tbl) AS product_count
+        FROM
+            dual
+    </select>
+
+    <!-- 최근 주문 5건 (결제상태 포함) -->
+    <select id="getRecentOrders" resultType="com.docmall.thistle.order.OrderVO">
+        SELECT
+            ord_code, user_id, ord_name, ord_price, ord_regdate, p_status
+        FROM (
+            SELECT
+                o.ord_code, o.user_id, o.ord_name, o.ord_price, o.ord_regdate, p.p_status
+            FROM
+                order_tbl o
+            LEFT OUTER JOIN
+                payinfo_tbl p
+            ON
+                o.ord_code = p.ord_code
+            ORDER BY
+                o.ord_code DESC
+        )
+        <![CDATA[ WHERE ROWNUM <= 5 ]]>
+    </select>
+
+    <!-- 재고 5개 이하 상품 (적은 순) -->
+    <select id="getLowStockProducts" resultType="com.docmall.thistle.admin.product.ProductVO">
+        SELECT
+            pro_num, pro_name, pro_amount, pro_buy
+        FROM (
+            SELECT
+                pro_num, pro_name, pro_amount, pro_buy
+            FROM
+                product_tbl
+            <![CDATA[ WHERE pro_amount <= 5 ]]>
+            ORDER BY
+                pro_amount ASC, pro_num DESC
+        )
+        <![CDATA[ WHERE ROWNUM <= 5 ]]>
+    </select>
 
 </mapper>

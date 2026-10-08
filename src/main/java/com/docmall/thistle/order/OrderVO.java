@@ -27,4 +27,7 @@ public class OrderVO {
     private String ord_desc;
     private Date ord_regdate;
     private String ord_admin_memo;
+
+    // 관리자 화면 표시용: 결제 테이블(payinfo_tbl)의 주문 진행 상태. order_tbl 컬럼은 아님
+    private String p_status;
 }

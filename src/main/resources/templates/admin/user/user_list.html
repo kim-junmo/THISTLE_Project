@@ -5,7 +5,7 @@ scratch. This page gets rid of all links and provides the needed markup only.
 -->
 <html lang="ko" xmlns:th="http://www.thymeleaf.org"
       xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
-      layout:decorate="~{admin/layout/adminLayout}">
+      layout:decorate="~{admin/layout/adminlayout}">
 <head>
 
 </head>
@@ -174,7 +174,7 @@ scratch. This page gets rid of all links and provides the needed markup only.
             //삭제버튼 클릭시 name="btn_user_del"
             $("button[name='btn_user_del']").on("click", function() {
 
-                if(!confirm("상품을 삭제하시겠습니까?")) return;
+                if(!confirm("회원을 삭제하시겠습니까?")) return;
 
                 let user_id = $(this).data("user_id");
 

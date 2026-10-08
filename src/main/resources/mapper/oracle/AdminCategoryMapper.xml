@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.docmall.thistle.admin.category.AdminCategoryMapper">
+
+    <!-- 1차 카테고리(cate_prtcode IS NULL)가 먼저 오도록 정렬 -->
+    <select id="getAllCategories" resultType="com.docmall.thistle.admin.category.AdminCategoryVO">
+        SELECT
+            c.cate_code,
+            c.cate_prtcode,
+            c.cate_name,
+            (SELECT COUNT(*) FROM product_tbl p WHERE p.cate_code = c.cate_code) AS pro_count
+        FROM
+            cate_tbl c
+        ORDER BY
+            c.cate_prtcode NULLS FIRST, c.cate_code
+    </select>
+
+    <!--
+        cate_code는 기존 값 중 가장 큰 값 + 1로 만든다. (별도 시퀀스가 없어도 동작하도록)
+        cate_prtcode가 null일 수 있으므로 jdbcType을 지정해야 Oracle에서 오류가 나지 않는다.
+    -->
+    <insert id="cate_insert">
+        INSERT INTO
+            cate_tbl(cate_code, cate_prtcode, cate_name)
+        SELECT
+            NVL(MAX(cate_code), 0) + 1, #{cate_prtcode, jdbcType=NUMERIC}, #{cate_name}
+        FROM
+            cate_tbl
+    </insert>
+
+    <update id="cate_update">
+        UPDATE
+            cate_tbl
+        SET
+            cate_name = #{cate_name}
+        WHERE
+            cate_code = #{cate_code}
+    </update>
+
+    <delete id="cate_delete" parameterType="Integer">
+        DELETE FROM
+            cate_tbl
+        WHERE
+            cate_code = #{cate_code}
+    </delete>
+
+    <select id="getChildCount" resultType="int" parameterType="Integer">
+        SELECT COUNT(*) FROM cate_tbl WHERE cate_prtcode = #{cate_code}
+    </select>
+
+    <select id="getProductCount" resultType="int" parameterType="Integer">
+        SELECT COUNT(*) FROM product_tbl WHERE cate_code = #{cate_code}
+    </select>
+
+    <select id="getSameNameCount" resultType="int">
+        SELECT
+            COUNT(*)
+        FROM
+            cate_tbl
+        WHERE
+            cate_name = #{cate_name}
+        AND
+        <choose>
+            <when test="cate_prtcode == null">
+                cate_prtcode IS NULL
+            </when>
+            <otherwise>
+                cate_prtcode = #{cate_prtcode}
+            </otherwise>
+        </choose>
+    </select>
+
+</mapper>

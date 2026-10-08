@@ -1,5 +1,6 @@
 package com.docmall.thistle.admin.adminorder;
 
+import com.docmall.thistle.common.constants.Constants;
 import com.docmall.thistle.common.dto.Criteria;
 import com.docmall.thistle.order.OrderVO;
 import com.docmall.thistle.payinfo.PayInfoMapper;
@@ -63,5 +64,13 @@ public class AdminOrderService {
     //상품 삭제
     public void order_list_delete(Long ord_code) {
         adminOrderMapper.order_list_delete(ord_code);
+    }
+
+    //주문 진행 상태 변경. 정해진 상태값이 아니면 변경하지 않는다.
+    public boolean order_status_change(Long ord_code, String p_status) {
+        if (ord_code == null || !Constants.ORDER_STATUS_LIST.contains(p_status)) {
+            return false;
+        }
+        return payInfoMapper.p_status_change(ord_code, p_status) > 0;
     }
 }

@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{admin/layout/adminlayout}">
+
+<th:block layout:fragment="content">
+    <div class="content-wrapper">
+        <section class="content-header">
+            <h1>리뷰 관리 <small>전체 [[${pageMaker.total}]]건</small></h1>
+        </section>
+
+        <section class="content">
+            <div class="box box-info">
+                <div class="box-header with-border">
+                    <form action="/admin/review/review_list" method="get" class="form-inline">
+                        <select name="type" class="form-control input-sm">
+                            <option value="" th:selected="${pageMaker.cri.type == null or pageMaker.cri.type == ''}">검색종류선택</option>
+                            <option value="P" th:selected="${pageMaker.cri.type == 'P'}">상품명</option>
+                            <option value="I" th:selected="${pageMaker.cri.type == 'I'}">작성자 아이디</option>
+                            <option value="C" th:selected="${pageMaker.cri.type == 'C'}">제목/내용</option>
+                        </select>
+                        <input type="text" name="keyword" class="form-control input-sm" th:value="${pageMaker.cri.keyword}">
+                        <button type="submit" class="btn btn-primary btn-sm">검색</button>
+                    </form>
+                </div>
+
+                <div class="box-body no-padding">
+                    <table class="table table-hover">
+                        <tr>
+                            <th style="width: 70px">번호</th>
+                            <th style="width: 18%">상품</th>
+                            <th style="width: 10%">작성자</th>
+                            <th>제목 / 내용</th>
+                            <th style="width: 90px">평점</th>
+                            <th style="width: 100px">작성일</th>
+                            <th style="width: 70px">삭제</th>
+                        </tr>
+                        <tr th:each="r : ${review_list}">
+                            <td th:text="${r.re_code}"></td>
+                            <td th:text="${r.pro_name ?: '(삭제된 상품)'}"></td>
+                            <td th:text="${r.user_id}"></td>
+                            <td>
+                                <strong th:text="${r.re_title}"></strong><br>
+                                <small class="text-muted" th:text="${r.re_content != null and r.re_content.length() > 80 ? r.re_content.substring(0, 80) + '…' : r.re_content}"></small>
+                            </td>
+                            <td style="color: #f39c12;">
+                                <th:block th:each="i : ${#numbers.sequence(1, 5)}"><i class="fa" th:classappend="${i <= r.re_rate} ? 'fa-star' : 'fa-star-o'"></i></th:block>
+                            </td>
+                            <td th:text="${#dates.format(r.re_date, 'yyyy-MM-dd')}"></td>
+                            <td>
+                                <button type="button" class="btn btn-danger btn-xs" name="btn_review_del" th:data-re_code="${r.re_code}">삭제</button>
+                            </td>
+                        </tr>
+                        <tr th:if="${#lists.isEmpty(review_list)}">
+                            <td colspan="7" class="text-center text-muted">리뷰가 없습니다.</td>
+                        </tr>
+                    </table>
+                </div>
+
+                <div class="box-footer clearfix">
+                    <!-- 페이지 이동, 삭제 시 현재 검색조건을 함께 보낸다 -->
+                    <form id="actionForm" action="/admin/review/review_list" method="get">
+                        <input type="hidden" name="pageNum" th:value="${pageMaker.cri.pageNum}">
+                        <input type="hidden" name="amount" th:value="${pageMaker.cri.amount}">
+                        <input type="hidden" name="type" th:value="${pageMaker.cri.type}">
+                        <input type="hidden" name="keyword" th:value="${pageMaker.cri.keyword}">
+                    </form>
+
+                    <ul class="pagination pagination-sm no-margin pull-right" th:if="${pageMaker.total > 0}">
+                        <li th:if="${pageMaker.prev}"><a th:href="${pageMaker.startPage - 1}" class="movepage">이전</a></li>
+                        <li th:each="num : ${#numbers.sequence(pageMaker.startPage, pageMaker.endPage)}"
+                            th:classappend="${pageMaker.cri.pageNum == num} ? 'active'">
+                            <a th:href="${num}" th:text="${num}" class="movepage"></a>
+                        </li>
+                        <li th:if="${pageMaker.next}"><a th:href="${pageMaker.endPage + 1}" class="movepage">다음</a></li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+    </div>
+</th:block>
+
+<th:block layout:fragment="script">
+    <script th:inline="javascript">
+        $(document).ready(function() {
+
+            let msg = [[${msg}]];
+            if (msg == "deleteSuccess") {
+                alert("리뷰가 삭제되었습니다.");
+            }
+
+            let actionForm = $("#actionForm");
+
+            $(".movepage").on("click", function(e) {
+                e.preventDefault();
+                actionForm.attr("method", "get").attr("action", "/admin/review/review_list");
+                actionForm.find("input[name='re_code']").remove();
+                actionForm.find("input[name='pageNum']").val($(this).attr("href"));
+                actionForm.submit();
+            });
+
+            $("button[name='btn_review_del']").on("click", function() {
+                if (!confirm("이 리뷰를 삭제하시겠습니까? 삭제하면 되돌릴 수 없습니다.")) return;
+
+                actionForm.find("input[name='re_code']").remove();
+                actionForm.append($("<input>", { type: "hidden", name: "re_code", value: $(this).data("re_code") }));
+                actionForm.attr("method", "post").attr("action", "/admin/review/review_delete");
+                actionForm.submit();
+            });
+        });
+    </script>
+</th:block>
+</html>

@@ -57,15 +57,14 @@ public class AdminUserController {
         model.addAttribute("pageMaker", new PageDTO(cri, totalCount));
     }
 
+    // 회원목록 화면은 form submit(화면 이동)으로 호출하므로 "success" 글자만 보이던 문제 수정: 목록으로 되돌아간다
     @GetMapping("/user_delete")
-    public ResponseEntity<String> user_deleteOK(String user_id) {
-        ResponseEntity<String> entity = null;
+    public String user_deleteOK(Criteria cri, String user_id) {
 
         //db연동
         adminUserService.user_delete(user_id);
 
-        entity = new ResponseEntity<String>("success", HttpStatus.OK);
-        return entity;
+        return "redirect:/admin/user/user_list" + cri.getListLink();
     }
 
     //메일 발송 목록
