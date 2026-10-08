@@ -58,14 +58,14 @@ public class NaverLoginController {
         String responseUser = naverLoginService.getNaverUserByToken(naverToken);
         NaverResponse naverResponse = objectMapper.readValue(responseUser, NaverResponse.class);
 
-        // 사용자 정보를 로그에 출력합니다.
-        log.info(" 사용자 정보 : " + naverResponse.toString());
-
-        // 네이버 사용자 이메일을 가져옵니다.
-        String sns_email = naverResponse.getResponse().getEmail();
-
         // 네이버 응답이 있으면 세션에 사용자 정보와 액세스 토큰을 저장합니다.
-        if(naverResponse != null) {
+        // (null 확인을 값을 꺼내기 전에 해야 NullPointerException이 나지 않는다)
+        if(naverResponse != null && naverResponse.getResponse() != null) {
+            log.info(" 사용자 정보 : " + naverResponse.getResponse());
+
+            // 네이버 사용자 이메일을 가져옵니다.
+            String sns_email = naverResponse.getResponse().getEmail();
+
             session.setAttribute("naver_status", naverResponse);
             session.setAttribute("accessToken", naverToken.getAccess_token());
 
@@ -77,6 +77,9 @@ public class NaverLoginController {
                 dto.setEmail(naverResponse.getResponse().getEmail());
                 dto.setName(naverResponse.getResponse().getName());
                 dto.setSns_type("naver");
+
+                // DTO만 만들고 저장하지 않던 부분 수정 (카카오 로그인과 동일하게 저장)
+                userService.sns_user_insert(dto);
             }
         }
         // 홈 페이지로 리다이렉트합니다.

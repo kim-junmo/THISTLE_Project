@@ -109,7 +109,8 @@
 
             //주문 하기 id="btn_order"
             $("button#btn_order").on("click", function() {
-                location.href = "/order/orderinfo?type=direct";
+                // direct로 보내면 상품번호 없이(0) 장바구니에 추가를 시도하므로, 장바구니 주문은 cartorder
+                location.href = "/order/orderinfo?type=cartorder";
             });
 
 

@@ -20,7 +20,7 @@ public interface UserMapper {
     String pwfind(@Param("user_id") String user_id, @Param("user_name") String user_name, @Param("user_email") String user_email);
 
     //임시비밀번호
-    void tempPwUpdate(@Param("user_id") String user_id, @Param("temp_enc_ow") String temp_enc_ow);
+    void tempPwUpdate(@Param("user_id") String user_id, @Param("temp_enc_pw") String temp_enc_pw);
 
     // 내 정보 수정
     void modify(UserVO vo);

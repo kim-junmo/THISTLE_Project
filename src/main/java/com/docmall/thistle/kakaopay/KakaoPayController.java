@@ -25,8 +25,10 @@ public class KakaoPayController {
     private final CartService cartService;
     private final OrderService orderService;
 
-    private OrderVO vo;
-    private String user_id;
+    // 컨트롤러는 모든 사용자가 같이 쓰는 객체(싱글톤)라서, 주문정보를 필드에 저장하면
+    // 동시에 결제하는 다른 사용자의 정보로 덮어써진다. 그래서 사용자별 세션에 저장한다.
+    private static final String SESSION_ORDER = "kakaopay_order";
+    private static final String SESSION_TID = "kakaopay_tid";
 
     @GetMapping("/kakaopayrequest")
     public void kakaopayrequest() {
@@ -40,7 +42,6 @@ public class KakaoPayController {
 
         //1. 결제 준비요청
         String user_id = ((UserVO) session.getAttribute("login_status")).getUser_id();
-        this.user_id = user_id;
 
         //장바구니 주문 목록
         List<CartProductVO> cart_list = cartService.cart_list(user_id);
@@ -65,24 +66,41 @@ public class KakaoPayController {
 
         log.info("응답 데이터 : " + readyResponse);
 
-        this.vo = vo;
+        // 승인 단계에서 쓸 주문정보와 결제고유번호(tid)를 이 사용자의 세션에 보관
+        session.setAttribute(SESSION_ORDER, vo);
+        session.setAttribute(SESSION_TID, readyResponse.getTid());
 
         return readyResponse;
     }
 
     //성공
     @GetMapping("/approval")
-    public void approval(String pg_token) {
+    public String approval(String pg_token, HttpSession session) {
         log.info("pg_token : " + pg_token);
 
+        OrderVO vo = (OrderVO) session.getAttribute(SESSION_ORDER);
+        String tid = (String) session.getAttribute(SESSION_TID);
+        UserVO user = (UserVO) session.getAttribute("login_status");
+
+        // 결제 준비 정보가 없으면(세션 만료 등) 승인할 수 없으므로 실패 화면으로
+        if (vo == null || tid == null || user == null) {
+            return "kakao/fail";
+        }
+        String user_id = user.getUser_id();
+
         //2) 결제 승인 요청
-        String approveResponse = kakaoPayService.approve(pg_token);
+        String approveResponse = kakaoPayService.approve(pg_token, tid, user_id, user_id);
         log.info("최종결과 : " + approveResponse);
 
-        if(approveResponse.contains("aid")) {
+        session.removeAttribute(SESSION_ORDER);
+        session.removeAttribute(SESSION_TID);
+
+        if(approveResponse != null && approveResponse.contains("aid")) {
             log.info("주문자 정보 2 : " + vo);
             orderService.order_process(vo, user_id, "kakaopay", "결제완료", "kakaopay");
+            return "kakao/approval";
         }
+        return "kakao/fail";
     }
 
     //취소

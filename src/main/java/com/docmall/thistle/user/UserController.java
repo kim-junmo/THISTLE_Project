@@ -179,7 +179,7 @@ public class UserController {
             userService.tempPwUpdate(user_id, temp_enc_pw);
 
             EmailDTO dto = new EmailDTO("THISTLE", "THISTLE", d_email, "THISTLE에서 임시 비밀번호를 보냈습니다", tempPW);
-            emailService.sendMail("emailIDResult", dto, tempPW);
+            emailService.sendMail("emailPwResult", dto, tempPW);
 
             session.removeAttribute("authcode");
             msg = "success";
@@ -295,10 +295,10 @@ public class UserController {
                 msg = "failpw";
                 url = "/user/delete";
 
-                rttr.addAttribute("msg", msg);
+                rttr.addFlashAttribute("msg", msg);
             }
         }
-        return "redirect:/";
+        return "redirect:" + url;
     }
 
 }

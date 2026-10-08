@@ -3,18 +3,19 @@
 <mapper namespace="com.docmall.thistle.myshop.MyshopMapper">
 
     <sql id="criteria">
-        <trim prefix="(" suffix=") AND" prefixOverrides="OR">
+        <!-- o.user_id = #{user_id} 뒤에 붙으므로 AND로 시작해야 하고, 조인 쿼리라 컬럼에 별칭(o.)이 필요하다 -->
+        <trim prefix="AND (" suffix=")" prefixOverrides="OR">
             <foreach collection="cri.typeArr" item="type">
                 <trim prefix="OR">
                     <choose>
                         <when test="type == 'N'.toString()">
-                            ord_name like '%' || #{cri.keyword} || '%'
+                            o.ord_name like '%' || #{cri.keyword} || '%'
                         </when>
                         <when test="type == 'C'.toString()">
-                            ord_code like '%' || #{cri.keyword} || '%'
+                            o.ord_code like '%' || #{cri.keyword} || '%'
                         </when>
                         <when test="type == 'I'.toString()">
-                            user_id like '%' || #{cri.keyword} || '%'
+                            o.user_id like '%' || #{cri.keyword} || '%'
                         </when>
                     </choose>
                 </trim>

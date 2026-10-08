@@ -48,7 +48,7 @@ public class AdminController {
             idcheck = "yes";
         }
 
-        entity = new ResponseEntity<String>("success", HttpStatus.OK);
+        entity = new ResponseEntity<String>(idcheck, HttpStatus.OK);
 
         return entity;
     }
@@ -72,26 +72,28 @@ public class AdminController {
             if (passwordEncoder.matches(dto.getAdmin_pw(), d_vo.getAdmin_pw())) {
                 d_vo.setAdmin_pw("");
                 session.setAttribute("admin_state", d_vo);
-                url = "admin/admin_menu";
+                url = "/admin/admin_menu";
             }else {
                 msg = "failPW";
-                url = "admin/adlogin";
+                url = "/admin/";
             }
         }else {
             msg = "failID";
-            url = "admin/adlogin";
+            url = "/admin/";
         }
 
 
         rttr.addFlashAttribute("msg", msg);
-        return "redirect:/admin/admin_menu";
+        // 로그인 실패 시에도 관리자 메뉴로 이동하던 문제 수정: 결과에 따라 이동
+        return "redirect:" + url;
     }
     @GetMapping("/admin_menu")
 
     public void admin_Menu() {
 
     }
-    @PostMapping("/admin_logout")
+    // header.html의 로그아웃은 <a href> 링크(GET 요청)이므로 GET으로 매핑
+    @GetMapping("/admin_logout")
     public String admin_logoutOK(HttpSession session) {
         session.removeAttribute("admin_state");
 

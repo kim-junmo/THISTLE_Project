@@ -58,7 +58,8 @@ public class ReviewController {
         reviewService.review_save(vo);
 
         log.info("상품 후기 데이터 : " + vo);
-        ResponseEntity<String> entity = null;
+        // 화면(pro_detail.html)에서 "success"를 확인하므로 반드시 응답 본문을 보내야 한다.
+        ResponseEntity<String> entity = new ResponseEntity<String>("success", HttpStatus.OK);
 
         return entity;
     }
@@ -85,7 +86,7 @@ public class ReviewController {
         return entity;
     }
 
-    @DeleteMapping("/review_delete")
+    @DeleteMapping("/review_delete/{re_code}")
     public ResponseEntity<String> review_deleteOK(@PathVariable("re_code") Long re_code) throws Exception {
         ResponseEntity<String> entity = null;
 

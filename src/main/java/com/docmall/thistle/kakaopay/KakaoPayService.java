@@ -27,9 +27,8 @@ public class KakaoPayService {
     @Value("${fail}")
     private String fail;
 
-    private String tid;
-    private String partnerOrderId;
-    private String partnerUserId;
+    // tid, 주문번호를 필드에 저장하지 않는다. (서비스도 싱글톤이라 사용자끼리 값이 섞임)
+    // ready()가 돌려준 tid를 컨트롤러가 세션에 보관했다가 approve()에 넘겨준다.
 
     public ReadyResponse ready(String partnerOrderId, String partnerUserId, String itemName, int quantity, int totalAmount, int taxFreeAmount, int vatAmount) {
         // Request header
@@ -63,17 +62,11 @@ public class KakaoPayService {
         );
         ReadyResponse readyResponse = response.getBody();
 
-        // 주문번호와 TID를 매핑해서 저장해놓는다.
-        // Mapping TID with partner_order_id then save it to use for approval request.
-        this.tid = readyResponse.getTid();
-        this.partnerOrderId = partnerOrderId;
-        this.partnerUserId = partnerUserId;
-
         return readyResponse;
     }
 
     // 2)결제승인요청(approve)
-    public String approve(String pgToken) {
+    public String approve(String pgToken, String tid, String partnerOrderId, String partnerUserId) {
         // ready할 때 저장해놓은 TID로 승인 요청
         // Call “Execute approved payment” API by pg_token, TID mapping to the current payment transaction and other parameters.
         HttpHeaders headers = new HttpHeaders();

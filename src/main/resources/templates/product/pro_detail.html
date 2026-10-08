@@ -426,11 +426,9 @@
 
                         //별 상태 출력.
                         let re_rate = result.re_rate;
+                        // index는 0부터 시작하므로 '<'로 비교해야 평점 개수만큼만 켜진다. (기존 '<='는 한 개씩 더 켜져서 수정할 때마다 평점이 1씩 올라감)
                         $("p#star_re_rate a.re_rate").each(function(index, item) {
-
-                            if(index <= re_rate) {
-                                $(this).addClass("on");
-                            }
+                            $(this).toggleClass("on", index < re_rate);
                         });
 
                         //modal 보여주기

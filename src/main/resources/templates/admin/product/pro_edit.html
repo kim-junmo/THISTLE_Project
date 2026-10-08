@@ -171,7 +171,7 @@ scratch. This page gets rid of all links and provides the needed markup only.
         // 1차카테고리 선택
         $("#btn_firstCategory").on("change", function() {
             let cate_code = $("#btn_firstCategory").val();
-            let url = "/admin/category/secondcategory/" + cate_code;
+            let url = "/category/secondcategory/" + cate_code;
 
             $.getJSON(url, function(secondcategory_result) {
                 let btn_secondCategory = $("#btn_secondCategory");

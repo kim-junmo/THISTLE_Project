@@ -8,7 +8,7 @@ $(document).ready(function() {
         let cate_code = cur_category.find("a").data("cate_code");
 
         // 2차 카테고리 주소
-        let url = "/admin/category/secondcategory/" + cate_code;
+        let url = "/category/secondcategory/" + cate_code;
 
         $.getJSON(url, function(secondcategory_result) {
             let str = '<ul class="dropdown">';

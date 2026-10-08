@@ -25,7 +25,7 @@
     <sql id="period">
         <if test="start_date != null and !start_date.equals('') and end_date != null and !end_date.equals('')">
             <![CDATA[
-            ord_regdate >= to_data(#{start_date}) AND ord_regdate < to_data(#{start_date}) + 1 AND
+            ord_regdate >= to_date(#{start_date}) AND ord_regdate < to_date(#{end_date}) + 1 AND
             ]]>
         </if>
     </sql>
@@ -143,7 +143,7 @@
         SET
             ord_price = (
                 SELECT
-                    (dt_amount * dt_price)
+                    NVL(SUM(dt_amount * dt_price), 0)
                 FROM
                     ordetail_tbl
                 WHERE

@@ -60,12 +60,14 @@ public class OrderController {
             //총 합계 금액
             for(int i=0; i < cart_list.size(); i++) {
                 total_price += (cart_list.get(i).getPro_price() * cart_list.get(i).getCart_amount());
+            }
 
-
+            // 반복문 밖에서 한 번만 담는다. (장바구니가 비어 있어도 화면에 값이 전달되도록)
             model.addAttribute("cart_list", cart_list);
             model.addAttribute("total_price", total_price);
-        }
-        return "/order/orderinfo";
+
+        // 앞에 "/"가 있으면 jar로 배포했을 때 템플릿을 못 찾는 경우가 있어 제거
+        return "order/orderinfo";
     }
 
     //주문자와 동일
